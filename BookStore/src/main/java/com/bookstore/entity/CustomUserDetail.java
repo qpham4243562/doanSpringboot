@@ -45,4 +45,8 @@ public class CustomUserDetail implements UserDetails {
     public boolean isAccountNonLocked() {
         return UserDetails.super.isAccountNonLocked();
     }
+    
+    public Long getId() {
+        return user.getId();
+    }
 }

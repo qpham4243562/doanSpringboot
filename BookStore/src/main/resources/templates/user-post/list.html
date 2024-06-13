@@ -28,6 +28,7 @@
       <th>Created At</th>
       <th>Updated At</th>
       <th>Images</th>
+      <th>Likes</th>
       <th>Actions</th>
     </tr>
     <tr th:each="userPost : ${userPosts}">
@@ -41,7 +42,11 @@
           <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
         </div>
       </td>
+      <td th:text="${userPost.likes}"></td>
       <td>
+        <form th:action="@{/user-posts/{id}/like(id=${userPost.id})}" method="post">
+          <button type="submit" th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}"></button>
+        </form>
         <a th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
         <a th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
       </td>

@@ -1,7 +1,11 @@
 package com.bookstore.controller;
 
+import com.bookstore.entity.User;
+import com.bookstore.entity.UserPostLike;
 import com.bookstore.entity.User_Post;
 import com.bookstore.entity.Image;
+import com.bookstore.repository.IUserRepository;
+import com.bookstore.repository.UserPostLikeRepository;
 import com.bookstore.services.ClassService;
 import com.bookstore.services.SubjectService;
 import com.bookstore.services.UserPostService;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +35,11 @@ public class UserPostController {
 
     @Autowired
     private SubjectService subjectService;
+
+    @Autowired
+    private IUserRepository userRepository;
+    @Autowired
+    private UserPostLikeRepository userPostLikeRepository;
 
     @GetMapping
     public String getAllUserPosts(Model model) {
@@ -111,5 +121,27 @@ public class UserPostController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(org.springframework.http.MediaType.valueOf(image.getType()));
         return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/like")
+    public String likeUserPost(@PathVariable Long id, Principal principal) {
+        User_Post userPost = userPostService.getUserPostById(id);
+        User user = userRepository.findByUsername(principal.getName());
+
+        UserPostLike existingLike = userPostLikeRepository.findByUserAndUserPost(user, userPost);
+
+        if (existingLike != null) {
+            userPostLikeRepository.delete(existingLike);
+            userPost.setLikes(userPost.getLikes() - 1);
+        } else {
+            UserPostLike newLike = new UserPostLike();
+            newLike.setUser(user);
+            newLike.setUserPost(userPost);
+            userPostLikeRepository.save(newLike);
+            userPost.setLikes(userPost.getLikes() + 1);
+        }
+
+        userPostService.updateUserPost(userPost);
+        return "redirect:/user-posts";
     }
 }

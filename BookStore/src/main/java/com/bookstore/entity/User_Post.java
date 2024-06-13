@@ -35,4 +35,26 @@ public class User_Post {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_post_id")
     private List<Image> images;
+
+    @Column(name = "likes")
+    private int likes;
+
+    @OneToMany(mappedBy = "userPost", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserPostLike> userPostLikes;
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public List<UserPostLike> getUserPostLikes() {
+        return userPostLikes;
+    }
+
+    public void setUserPostLikes(List<UserPostLike> userPostLikes) {
+        this.userPostLikes = userPostLikes;
+    }
 }

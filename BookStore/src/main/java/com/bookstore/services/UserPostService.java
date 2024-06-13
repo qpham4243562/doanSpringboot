@@ -1,9 +1,11 @@
 package com.bookstore.services;
 
 import com.bookstore.entity.Image;
+import com.bookstore.entity.User;
 import com.bookstore.entity.User_Post;
 import com.bookstore.repository.IUserPostRepository;
 import com.bookstore.repository.ImageRepository;
+import com.bookstore.repository.UserPostLikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class UserPostService {
     private IUserPostRepository userPostRepository;
     @Autowired
     private ImageRepository imageRepository;
+    @Autowired
+    private UserPostLikeRepository userPostLikeRepository;
+
     public User_Post createUserPost(User_Post userPost) {
         userPost.setCreatedAt(new Date());
         userPost.setUpdatedAt(new Date());
@@ -43,5 +48,8 @@ public class UserPostService {
     }
     public Image getImageById(Long id) {
         return imageRepository.findById(id).orElse(null);
+    }
+    public boolean hasUserLikedPost(User user, User_Post userPost) {
+        return userPostLikeRepository.findByUserAndUserPost(user, userPost) != null;
     }
 }

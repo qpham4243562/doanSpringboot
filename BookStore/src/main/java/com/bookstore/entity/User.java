@@ -45,4 +45,15 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> roles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserPostLike> userPostLikes;
+
+    public List<UserPostLike> getUserPostLikes() {
+        return userPostLikes;
+    }
+
+    public void setUserPostLikes(List<UserPostLike> userPostLikes) {
+        this.userPostLikes = userPostLikes;
+    }
 }
