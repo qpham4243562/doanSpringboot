@@ -1,12 +1,10 @@
 package com.bookstore.controller;
 
-import com.bookstore.entity.User;
-import com.bookstore.entity.UserPostLike;
-import com.bookstore.entity.User_Post;
-import com.bookstore.entity.Image;
+import com.bookstore.entity.*;
 import com.bookstore.repository.IUserRepository;
 import com.bookstore.repository.UserPostLikeRepository;
 import com.bookstore.services.ClassService;
+import com.bookstore.services.CommentService;
 import com.bookstore.services.SubjectService;
 import com.bookstore.services.UserPostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +38,15 @@ public class UserPostController {
     private IUserRepository userRepository;
     @Autowired
     private UserPostLikeRepository userPostLikeRepository;
+    @Autowired
+    private CommentService commentService;
 
     @GetMapping
     public String getAllUserPosts(Model model) {
         List<User_Post> userPosts = userPostService.getAllUserPosts();
+        for (User_Post userPost : userPosts) {
+            userPost.setCommentCount(commentService.countCommentsByUserPostId(userPost.getId()));
+        }
         model.addAttribute("userPosts", userPosts);
         return "user-post/list";
     }
@@ -143,5 +146,39 @@ public class UserPostController {
 
         userPostService.updateUserPost(userPost);
         return "redirect:/user-posts";
+    }
+
+
+    @GetMapping("/{postId}")
+    public String getUserPost(@PathVariable Long postId, Model model, Principal principal) {
+        User_Post userPost = userPostService.getUserPostById(postId);
+        User currentUser = userRepository.findByUsername(principal.getName());
+
+        model.addAttribute("userPost", userPost);
+        model.addAttribute("comments", commentService.getCommentsByUserPostId(postId));
+        model.addAttribute("currentUser", currentUser);
+        return "user-post/detail";
+    }
+
+
+    @PostMapping("/{postId}/comments")
+    public String addComment(@PathVariable Long postId, @RequestParam("content") String content, Principal principal) {
+        User_Post userPost = userPostService.getUserPostById(postId);
+        User user = userRepository.findByUsername(principal.getName());
+
+        Comment comment = new Comment();
+        comment.setContent(content);
+        comment.setUser(user);
+        comment.setUserPost(userPost);
+
+        commentService.addComment(comment);
+        return "redirect:/user-posts/" + postId;
+    }
+
+    @PostMapping("/comments/{commentId}/delete")
+    public String deleteComment(@PathVariable Long commentId, @RequestParam("postId") Long postId, Principal principal) {
+        User user = userRepository.findByUsername(principal.getName());
+        commentService.deleteComment(commentId, user);
+        return "redirect:/user-posts/" + postId;
     }
 }

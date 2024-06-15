@@ -23,6 +23,8 @@ public class UserPostService {
     private ImageRepository imageRepository;
     @Autowired
     private UserPostLikeRepository userPostLikeRepository;
+    @Autowired
+    private CommentService commentService;
 
     public User_Post createUserPost(User_Post userPost) {
         userPost.setCreatedAt(new Date());
@@ -42,7 +44,9 @@ public class UserPostService {
         userPost.setUpdatedAt(new Date());
         return userPostRepository.save(userPost);
     }
-
+    public int getCommentCountByPostId(Long postId) {
+        return commentService.countCommentsByUserPostId(postId);
+    }
     public void deleteUserPost(Long id) {
         userPostRepository.deleteById(id);
     }

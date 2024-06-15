@@ -41,7 +41,14 @@ public class User_Post {
 
     @OneToMany(mappedBy = "userPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserPostLike> userPostLikes;
+    @Transient
+    private int commentCount;
+    @OneToMany(mappedBy = "userPost", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 
+    public int getCommentCount() {
+        return comments != null ? comments.size() : 0;
+    }
     public int getLikes() {
         return likes;
     }

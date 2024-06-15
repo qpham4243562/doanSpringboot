@@ -21,6 +21,7 @@
   <h1>User Post List</h1>
   <a th:href="@{/user-posts/new}">Create New User Post</a>
   <table>
+    <thead>
     <tr>
       <th>Content</th>
       <th>Class</th>
@@ -29,8 +30,11 @@
       <th>Updated At</th>
       <th>Images</th>
       <th>Likes</th>
+      <th>Comments</th>
       <th>Actions</th>
     </tr>
+    </thead>
+    <tbody>
     <tr th:each="userPost : ${userPosts}">
       <td th:text="${userPost.content}"></td>
       <td th:text="${userPost.classEntity.name}"></td>
@@ -43,14 +47,17 @@
         </div>
       </td>
       <td th:text="${userPost.likes}"></td>
+      <td th:text="${userPost.commentCount}"></td>
       <td>
         <form th:action="@{/user-posts/{id}/like(id=${userPost.id})}" method="post">
           <button type="submit" th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}"></button>
         </form>
         <a th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
         <a th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
+        <a th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
       </td>
     </tr>
+    </tbody>
   </table>
 </main>
 
