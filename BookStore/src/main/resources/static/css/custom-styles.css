@@ -1,0 +1,75 @@
+/* layout */
+/* custom-styles.css */
+.navbar-custom {
+    background-color: #FC8717;
+}
+
+.navbar-custom .navbar-nav .nav-link,
+.navbar-custom .navbar-brand,
+.navbar-custom .btn,
+.navbar-custom .form-control,
+.navbar-custom .bi {
+    color: white !important;
+}
+
+.navbar-custom .navbar-nav .nav-link:hover,
+.navbar-custom .navbar-brand:hover,
+.navbar-custom .btn:hover,
+.navbar-custom .form-control:hover,
+.navbar-custom .bi:hover {
+    color: #f8f9fa !important;
+    text-decoration: none;
+}
+
+.navbar-custom .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='white' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-bar .form-control {
+    width: 200px; /* Adjust the width as necessary */
+}
+
+.search-bar i {
+    cursor: pointer;
+}
+
+.search-bar i {
+    font-size: 1.5rem; /* Adjust the size as necessary */
+}
+/* Remove the dropdown arrow */
+.nav-link.dropdown-toggle::after {
+    display: none;
+}
+
+/* Custom CSS to adjust dropdown */
+.nav-link.dropdown-toggle::after {
+    display: none; /* Hide the dropdown arrow */
+}
+
+.dropdown-menu {
+    box-shadow: none; /* Remove shadow if needed */
+    left: -100px; /* Adjust this value to shift the menu left */
+}
+
+/* Optionally, you can adjust the dropdown menu's position with more specific selectors */
+.dropdown-menu-end {
+    left: -150px; /* Example adjustment, change as needed */
+}
+
+.dropdown-item {
+    color: #000; /* Text color */
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa; /* Light background on hover */
+}
+.dropdown-menu[data-bs-popper] {
+    top: 100%; /* Adjust this if needed */
+    left: -120px; /* Change this value to move the menu left */
+    margin-top: var(--bs-dropdown-spacer);
+}

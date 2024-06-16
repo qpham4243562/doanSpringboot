@@ -10,10 +10,10 @@
       margin-right: 10px;
     }
   </style>
-  <th:block th:replace="layout :: link-css"></th:block>
+  <th:block th:replace="~{layout :: link-css}"></th:block>
 </head>
 <body layout:decorate="~{layout}">
-<th:block th:replace="layout :: header"></th:block>
+<th:block th:replace="~{layout :: header}"></th:block>
 
 <main layout:fragment="content">
   <h1 th:text="${userPost.content}">User Post Content</h1>
@@ -60,6 +60,6 @@
   </div>
 </main>
 
-<th:block th:replace="layout :: footer"></th:block>
+<th:block th:replace="~{layout :: footer}"></th:block>
 </body>
 </html>

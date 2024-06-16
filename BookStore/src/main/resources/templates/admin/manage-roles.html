@@ -6,7 +6,7 @@
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 <body>
-<div th:replace="layout :: header"></div>
+<div th:replace="~{layout :: link-css}"></div>
 
 <div class="container">
     <div th:fragment="content">
@@ -36,6 +36,6 @@
     </div>
 </div>
 
-<div th:replace="layout :: footer"></div>
+<div th:replace="~{layout :: footer}"></div>
 </body>
 </html>

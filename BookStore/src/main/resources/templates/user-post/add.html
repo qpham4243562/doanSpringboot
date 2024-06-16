@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <title>Create New User Post</title>
     <!-- Replace link CSS from layout -->
-    <th:block th:replace="layout :: link-css"></th:block>
+    <th:block th:replace="~{layout :: link-css}"></th:block>
 </head>
 <body layout:decorate="~{layout}">
 <!-- Replace header from layout -->
-<th:block th:replace="layout :: header"></th:block>
+<th:block th:replace="~{layout :: header}"></th:block>
 
 <main layout:fragment="content">
     <h1>Create New User Post</h1>
@@ -38,6 +38,6 @@
 </main>
 
 <!-- Replace footer from layout -->
-<th:block th:replace="layout :: footer"></th:block>
+<th:block th:replace="~{layout :: footer}"></th:block>
 </body>
 </html>

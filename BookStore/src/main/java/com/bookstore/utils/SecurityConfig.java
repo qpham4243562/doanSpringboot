@@ -53,7 +53,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/", "/register", "/forgot-password", "/reset-password**", "/oauth2/**")
+                        .requestMatchers("/css/**", "/js/**", "/login", "/register", "/forgot-password", "/reset-password**", "/oauth2/**")
                         .permitAll()
                         .requestMatchers("/error/400", "/error/404", "/error/500", "/error/403")
                         .permitAll()
@@ -68,7 +68,7 @@ public class SecurityConfig {
                 )
                 .formLogin(formLogin -> formLogin.loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/")
+                        .defaultSuccessUrl("/user-posts", true)
                         .permitAll()
                 )
                 .rememberMe(rememberMe -> rememberMe.key("uniqueAndSecret")
@@ -77,7 +77,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
-                        .defaultSuccessUrl("/")
+                        .defaultSuccessUrl("/user-posts")
                         .failureUrl("/login?error")
                         .userInfoEndpoint(userInfoEndpointConfig -> {
                             userInfoEndpointConfig.oidcUserService(new OidcUserService());

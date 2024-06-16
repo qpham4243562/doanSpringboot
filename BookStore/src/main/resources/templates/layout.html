@@ -1,47 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
-<meta charset="UTF-8">
-<title>My App</title>
-<link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${pageTitle}">Default Title</title>
+  <th:block th:fragment="link-css">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/custom-styles.css}"> <!-- Link to custom CSS -->
+  </th:block>
+  <style>
+    .dropdown-menu {
+      left: -100px; /* Adjust this value to move the menu to the left */
+      background-color: transparent !important;
+      box-shadow: none;
+    }
+    .dropdown-menu .dropdown-item {
+      color: #000;
+    }
+    .dropdown-menu .dropdown-item:hover {
+      background-color: #f8f9fa;
+    }
+    .nav-link.dropdown-toggle::after {
+      display: none; /* Hide the dropdown arrow */
+    }
+  </style>
 </head>
 <body>
 <header th:fragment="header">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#"></a>
+      <a class="navbar-brand" href="/user-posts">
+        <img src="../image/Logo.png" alt="Logo" style="height: 40px;">
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
               data-bs-target="#navbarSupportedContent"
-              aria-controls="navbar SupportedContent"
+              aria-controls="navbarSupportedContent"
               aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/">Trang chủ</a></li>
-          <li class="nav-item"> <a class="nav-link" href="/user-posts">Danh sách sách</a></li>
           <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
             <a class="nav-link" href="/admin/roles">Quản lý quyền</a>
           </li>
-          <li sec:authorize="isAuthenticated()">
-            <form th:action="@{/logout}" method="post">
-              <button class="btn btn-outline-primary" type="submit">Đăng xuất</button>
-            </form>
-          </li>
-          <li sec:authorize="!isAuthenticated()">
-            <a href="/login" class="btn btn-outline-primary">Đăng nhập</a>
-          </li>
         </ul>
+        <form class="d-flex align-items-center">
+          <input type="text" placeholder="Nội dung tìm kiếm" class="form-control me-2" style="width: 200px;">
+          <i class="bi bi-bell mx-2"></i>
+          <i class="bi bi-chat-dots-fill mx-2"></i>
+          <div class="dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-person-circle mx-2"></i>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <li><a class="dropdown-item" href="#">Trang cá nhân</a></li>
+              <li><a class="dropdown-item" href="#">Cập nhật</a></li>
+              <li><a class="dropdown-item" href="#">Xóa tài khoản</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
+            </ul>
+          </div>
+        </form>
       </div>
     </div>
   </nav>
 </header>
-<div th:insert="~{::${content}}">
-  <!-- NỘI DUNG TRANG CON--->
-</div>
+
+<main layout:fragment="content">
+  <!-- NỘI DUNG TRANG CON -->
+</main>
+
 <footer th:fragment="footer">
-  <script th:src="@{/js/bootstrap.min.js}"></script>
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script> <!-- Ensure the JS bundle is included -->
 </footer>
 </body>
 </html>

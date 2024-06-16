@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
 <head>
   <meta charset="UTF-8">
-  <title>User Post List</title>
+  <title>HomePage</title>
   <style>
     .post-images img {
       max-width: 100px;
@@ -11,14 +11,13 @@
     }
   </style>
   <!-- Replace link CSS from layout -->
-  <th:block th:replace="layout :: link-css"></th:block>
+  <th:block th:replace="~{layout :: link-css}"></th:block>
 </head>
 <body layout:decorate="~{layout}">
 <!-- Replace header from layout -->
-<th:block th:replace="layout :: header"></th:block>
+<th:block th:replace="~{layout :: header}"></th:block>
 
 <main layout:fragment="content">
-  <h1>User Post List</h1>
   <a th:href="@{/user-posts/new}">Create New User Post</a>
   <table>
     <thead>
@@ -62,6 +61,6 @@
 </main>
 
 <!-- Replace footer from layout -->
-<th:block th:replace="layout :: footer"></th:block>
+<th:block th:replace="~{layout :: footer}"></th:block>
 </body>
 </html>
