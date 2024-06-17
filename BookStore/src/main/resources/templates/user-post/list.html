@@ -71,6 +71,7 @@
     <thead>
     <tr>
       <th>Created By</th>
+      <th>image profile</th>
       <th>Content</th>
       <th>Class</th>
       <th>Subject</th>
@@ -85,6 +86,11 @@
     <tbody>
     <tr th:each="userPost : ${userPosts}">
       <td th:text="${userPost.user.name}"></td>
+      <td>
+        <img th:if="${userPost.user.image != null}"
+             th:src="'data:image/jpeg;base64,' + ${userPost.user.getBase64Image()}"
+             width="50" height="50" />
+      </td>
       <td th:text="${userPost.content}"></td>
       <td th:text="${userPost.classEntity.name}"></td>
       <td th:text="${userPost.subjectEntity.name}"></td>

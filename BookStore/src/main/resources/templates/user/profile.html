@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+  <title>Profile</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $("#updateButton").click(function() {
+        $("#updateForm").toggle();
+      });
+    });
+  </script>
+  <!-- Replace link CSS from layout -->
+  <th:block th:replace="~{layout :: link-css}"></th:block>
+</head>
+<body layout:decorate="~{layout}">
+<!-- Replace header from layout -->
+<th:block th:replace="~{layout :: header}"></th:block>
+
+<main layout:fragment="content">
+  <h1>Profile</h1>
+  <div>
+    <img th:if="${imageBase64 != null}" th:src="'data:image/jpeg;base64,' + ${imageBase64}" alt="Profile Image" />
+    <p>Name: <span th:text="${user.name}"></span></p>
+    <button id="updateButton" class="btn btn-primary">Update Profile</button>
+  </div>
+  <form id="updateForm" th:action="@{/profile}" method="post" enctype="multipart/form-data" th:object="${profileDTO}" style="display: none;">
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" th:field="*{name}" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label for="image">Profile Image:</label>
+      <input type="file" id="image" name="image" accept="image/*" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+  </form>
+</main>
+
+<!-- Replace footer from layout -->
+<th:block th:replace="~{layout :: footer}"></th:block>
+</body>
+</html>

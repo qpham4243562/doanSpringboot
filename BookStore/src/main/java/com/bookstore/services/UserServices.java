@@ -112,28 +112,9 @@ public class UserServices {
         userRepository.save(user);
         return "Role assigned successfully";
     }
-    public Comment addComment(Comment comment) {
-        comment.setCreatedAt(new Date());
-        comment.setUpdatedAt(new Date());
-        return commentRepository.save(comment);
-    }
 
-    public void deleteComment(Long id) {
-        commentRepository.deleteById(id);
-    }
-    public List<Role> getAllRoles() {
-        return roleRepository.findAll();
-    }
-
-    // Trong lớp UserServices
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    public Role findRoleByName(String name) {
-        return roleRepository.findByName(name);
-    }
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
 }

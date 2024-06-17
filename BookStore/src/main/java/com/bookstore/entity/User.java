@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.apache.commons.codec.binary.Base64;
 
 import java.util.List;
 
@@ -61,5 +62,8 @@ public class User {
 
     public void setUserPostLikes(List<UserPostLike> userPostLikes) {
         this.userPostLikes = userPostLikes;
+    }
+    public String getBase64Image() {
+        return Base64.encodeBase64String(image);
     }
 }

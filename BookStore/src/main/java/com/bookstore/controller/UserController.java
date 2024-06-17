@@ -1,20 +1,24 @@
 package com.bookstore.controller;
 
+import com.bookstore.dto.ProfileDTO;
 import com.bookstore.entity.User;
 import com.bookstore.services.UserServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
+import java.util.Base64;
 import java.util.List;
 
 @Controller
@@ -49,5 +53,39 @@ public class UserController {
         userService.save(user);
         return "redirect:/login";
     }
+    @GetMapping("/profile")
+    public String showProfile(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        User user = userService.findByUsername(username);
 
+        // Chuyển đổi dữ liệu ảnh thành chuỗi Base64
+        String imageBase64 = null;
+        if (user.getImage() != null) {
+            imageBase64 = Base64.getEncoder().encodeToString(user.getImage());
+        }
+
+        model.addAttribute("user", user);
+        model.addAttribute("imageBase64", imageBase64);
+
+        ProfileDTO profileDTO = new ProfileDTO();
+        model.addAttribute("profileDTO", profileDTO);
+
+        return "user/profile";
+    }
+    @PostMapping("/profile")
+    public String updateProfile(@ModelAttribute("profileDTO") ProfileDTO profileDTO, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+        User currentUser = userService.findByUsername(userDetails.getUsername());
+
+        if (profileDTO.getName() != null && !profileDTO.getName().isEmpty()) {
+            currentUser.setName(profileDTO.getName());
+        }
+
+        if (profileDTO.getImage() != null && !profileDTO.getImage().isEmpty()) {
+            byte[] imageBytes = profileDTO.getImage().getBytes();
+            currentUser.setImage(imageBytes);
+        }
+
+        userService.save(currentUser);
+        return "redirect:/profile";
+    }
 }

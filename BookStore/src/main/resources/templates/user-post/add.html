@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
-    <title>Create New User Post</title>
+    <title>Profile</title>
     <!-- Replace link CSS from layout -->
     <th:block th:replace="~{layout :: link-css}"></th:block>
 </head>
@@ -11,29 +11,23 @@
 <th:block th:replace="~{layout :: header}"></th:block>
 
 <main layout:fragment="content">
-    <h1>Create New User Post</h1>
-    <form th:action="@{/user-posts/new}" th:object="${userPost}" method="post" enctype="multipart/form-data">
+    <h1>Profile</h1>
+    <div>
+        <p>Username: <span th:text="${user.username}"></span></p>
+        <p>Email: <span th:text="${user.email}"></span></p>
+        <p>Name: <span th:text="${user.name}"></span></p>
+        <img th:if="${imageBase64 != null}" th:src="'data:image/jpeg;base64,' + ${imageBase64}" alt="Profile Image" />
+    </div>
+    <form th:action="@{/profile}" method="post" enctype="multipart/form-data" th:object="${profileDTO}">
         <div>
-            <label for="content">Content:</label>
-            <textarea id="content" th:field="*{content}"></textarea>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" th:field="*{name}" />
         </div>
         <div>
-            <label for="classEntity">Class:</label>
-            <select id="classEntity" th:field="*{classEntity}">
-                <option th:each="classEntity : ${classEntities}" th:value="${classEntity.id}" th:text="${classEntity.name}"></option>
-            </select>
+            <label for="image">Profile Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" />
         </div>
-        <div>
-            <label for="subjectEntity">Subject:</label>
-            <select id="subjectEntity" th:field="*{subjectEntity}">
-                <option th:each="subjectEntity : ${subjectEntities}" th:value="${subjectEntity.id}" th:text="${subjectEntity.name}"></option>
-            </select>
-        </div>
-        <div>
-            <label for="images">Images:</label>
-            <input type="file" id="images" name="images" multiple>
-        </div>
-        <button type="submit">Create User Post</button>
+        <button type="submit">Update</button>
     </form>
 </main>
 
