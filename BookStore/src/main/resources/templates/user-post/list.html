@@ -9,6 +9,10 @@
       max-height: 100px;
       margin-right: 10px;
     }
+    .dropdown-orange {
+      background-color: orange;
+      color: white;
+    }
   </style>
   <!-- Replace link CSS from layout -->
   <th:block th:replace="~{layout :: link-css}"></th:block>
@@ -16,12 +20,57 @@
 <body layout:decorate="~{layout}">
 <!-- Replace header from layout -->
 <th:block th:replace="~{layout :: header}"></th:block>
-
 <main layout:fragment="content">
-  <a th:href="@{/user-posts/new}">Create New User Post</a>
-  <table>
+  <div class="row">
+    <div class="col-md-10">
+      <div class="container mt-4">
+        <div class="row">
+          <div class="col">
+            <div class="custom-select-container">
+              <form class="form-inline mb-3" th:action="@{/user-posts}" method="get">
+                <select class="custom-select mr-sm-2 dropdown-orange" id="selectedClass" name="selectedClass">
+                  <option value="">Chọn khối</option>
+                  <option th:each="classEntity : ${classEntities}"
+                          th:value="${classEntity.id}"
+                          th:text="${classEntity.name}"
+                          th:selected="${classEntity.id == selectedClassId}"></option>
+                </select>
+                <select class="custom-select mr-sm-2 dropdown-orange" id="selectedSubject" name="selectedSubject">
+                  <option value="">Chọn môn học</option>
+                  <option th:each="subjectEntity : ${subjectEntities}"
+                          th:value="${subjectEntity.id}"
+                          th:text="${subjectEntity.name}"
+                          th:selected="${subjectEntity.id == selectedSubjectId}"></option>
+                </select>
+                <button type="submit" class="btn btn-primary">Lọc</button>
+              </form>
+
+              <div class="d-flex align-items-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16" style="color: orange; padding: 10px;">
+                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                  <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+                </svg>
+                <form id="textForm" class="form-inline ml-2">
+                  <input type="text" id="textInput" placeholder="Nhập văn bản vào đây..." class="large-input">
+                </form>
+              </div>
+              <div class="button-container">
+                <a th:href="@{/user-posts/new}">Create New User Post</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+    </div>
+  </div>
+
+  <h2>Recent User Posts</h2>
+  <table class="table">
     <thead>
     <tr>
+      <th>Created By</th>
       <th>Content</th>
       <th>Class</th>
       <th>Subject</th>
@@ -35,6 +84,7 @@
     </thead>
     <tbody>
     <tr th:each="userPost : ${userPosts}">
+      <td th:text="${userPost.user.name}"></td>
       <td th:text="${userPost.content}"></td>
       <td th:text="${userPost.classEntity.name}"></td>
       <td th:text="${userPost.subjectEntity.name}"></td>

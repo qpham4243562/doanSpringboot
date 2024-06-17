@@ -56,4 +56,18 @@ public class UserPostService {
     public boolean hasUserLikedPost(User user, User_Post userPost) {
         return userPostLikeRepository.findByUserAndUserPost(user, userPost) != null;
     }
+    public List<User_Post> getAllUserPostsWithUser() {
+        return userPostRepository.findAllWithUser();
+    }
+    public List<User_Post> getUserPostsByClassAndSubject(Long classId, Long subjectId) {
+        return userPostRepository.findByClassEntityIdAndSubjectEntityId(classId, subjectId);
+    }
+
+    public List<User_Post> getUserPostsByClass(Long classId) {
+        return userPostRepository.findByClassEntityId(classId);
+    }
+
+    public List<User_Post> getUserPostsBySubject(Long subjectId) {
+        return userPostRepository.findBySubjectEntityId(subjectId);
+    }
 }

@@ -11,5 +11,7 @@
     public interface IUserPostRepository extends JpaRepository<User_Post, Long> {
         List<User_Post> findByClassEntityId(Long classId);
         List<User_Post> findBySubjectEntityId(Long subjectId);
-
+        @Query("SELECT up FROM User_Post up JOIN FETCH up.user")
+        List<User_Post> findAllWithUser();
+        List<User_Post> findByClassEntityIdAndSubjectEntityId(Long classId, Long subjectId);
     }

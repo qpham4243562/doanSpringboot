@@ -133,4 +133,7 @@ public class UserServices {
     public Role findRoleByName(String name) {
         return roleRepository.findByName(name);
     }
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 }

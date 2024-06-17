@@ -38,6 +38,10 @@ public class User {
     @Column(name = "reset_password_token")
     private String resetPasswordToken;
 
+    @Column(name = "image")
+    @Lob
+    private byte[] image;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_role",
@@ -52,6 +56,8 @@ public class User {
     public List<UserPostLike> getUserPostLikes() {
         return userPostLikes;
     }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<User_Post> userPosts;
 
     public void setUserPostLikes(List<UserPostLike> userPostLikes) {
         this.userPostLikes = userPostLikes;

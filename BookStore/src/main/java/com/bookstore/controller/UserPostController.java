@@ -3,10 +3,7 @@ package com.bookstore.controller;
 import com.bookstore.entity.*;
 import com.bookstore.repository.IUserRepository;
 import com.bookstore.repository.UserPostLikeRepository;
-import com.bookstore.services.ClassService;
-import com.bookstore.services.CommentService;
-import com.bookstore.services.SubjectService;
-import com.bookstore.services.UserPostService;
+import com.bookstore.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,6 +24,8 @@ public class UserPostController {
 
     @Autowired
     private UserPostService userPostService;
+    @Autowired
+    private UserServices userService;
 
     @Autowired
     private ClassService classService;
@@ -42,14 +41,33 @@ public class UserPostController {
     private CommentService commentService;
 
     @GetMapping
-    public String getAllUserPosts(Model model) {
-        List<User_Post> userPosts = userPostService.getAllUserPosts();
+    public String getAllUserPosts(@RequestParam(value = "selectedClass", required = false) Long selectedClassId,
+                                  @RequestParam(value = "selectedSubject", required = false) Long selectedSubjectId,
+                                  Model model) {
+        List<User_Post> userPosts;
+        if (selectedClassId != null && selectedSubjectId != null) {
+            userPosts = userPostService.getUserPostsByClassAndSubject(selectedClassId, selectedSubjectId);
+        } else if (selectedClassId != null) {
+            userPosts = userPostService.getUserPostsByClass(selectedClassId);
+        } else if (selectedSubjectId != null) {
+            userPosts = userPostService.getUserPostsBySubject(selectedSubjectId);
+        } else {
+            userPosts = userPostService.getAllUserPostsWithUser();
+        }
+
         for (User_Post userPost : userPosts) {
             userPost.setCommentCount(commentService.countCommentsByUserPostId(userPost.getId()));
         }
+
         model.addAttribute("userPosts", userPosts);
+        model.addAttribute("classEntities", classService.getAllClasses());
+        model.addAttribute("subjectEntities", subjectService.getAllSubjects());
+        model.addAttribute("selectedClassId", selectedClassId);
+        model.addAttribute("selectedSubjectId", selectedSubjectId);
+
         return "user-post/list";
     }
+
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
@@ -61,7 +79,8 @@ public class UserPostController {
 
     @PostMapping("/new")
     public String createUserPost(@ModelAttribute User_Post userPost,
-                                 @RequestParam("images") List<MultipartFile> images) {
+                                 @RequestParam("images") List<MultipartFile> images,
+                                 Principal principal) {
         List<Image> imageList = new ArrayList<>();
         for (MultipartFile file : images) {
             Image image = new Image();
@@ -73,6 +92,9 @@ public class UserPostController {
             }
             imageList.add(image);
         }
+        String username = principal.getName();
+        User user = userService.findByUsername(username);
+        userPost.setUser(user);
         userPost.setImages(imageList);
         userPostService.createUserPost(userPost);
         return "redirect:/user-posts";
