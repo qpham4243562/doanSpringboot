@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <title>Notifications</title>
+  <!-- Include CSS from layout -->
+  <th:block th:replace="~{layout :: link-css}"></th:block>
+</head>
+<body layout:decorate="~{layout}">
+<!-- Include header from layout -->
+<th:block th:replace="~{layout :: header}"></th:block>
+
+<main layout:fragment="content">
+  <div class="container">
+    <h2>Notifications</h2>
+    <ul>
+      <li th:each="notification : ${notifications}">
+        <span th:text="${notification.message}"></span>
+        <form th:action="@{/user-posts/notifications/{id}/mark-as-read(id=${notification.id})}" method="post">
+          <button type="submit">Mark as Read</button>
+        </form>
+      </li>
+    </ul>
+  </div>
+</main>
+
+<!-- Include footer from layout -->
+<th:block th:replace="~{layout :: footer}"></th:block>
+</body>
+</html>

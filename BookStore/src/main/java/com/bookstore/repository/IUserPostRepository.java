@@ -14,4 +14,5 @@
         @Query("SELECT up FROM User_Post up JOIN FETCH up.user")
         List<User_Post> findAllWithUser();
         List<User_Post> findByClassEntityIdAndSubjectEntityId(Long classId, Long subjectId);
+        List<User_Post> findByApproved(boolean approved);
     }

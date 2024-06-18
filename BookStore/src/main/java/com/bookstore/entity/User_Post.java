@@ -38,7 +38,8 @@ public class User_Post {
 
     @Column(name = "likes")
     private int likes;
-
+    @Column(name = "approved")
+    private boolean approved = false;
     @OneToMany(mappedBy = "userPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserPostLike> userPostLikes;
     @Transient
@@ -62,6 +63,7 @@ public class User_Post {
     public List<UserPostLike> getUserPostLikes() {
         return userPostLikes;
     }
+
 
     public void setUserPostLikes(List<UserPostLike> userPostLikes) {
         this.userPostLikes = userPostLikes;

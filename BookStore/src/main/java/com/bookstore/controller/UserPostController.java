@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/user-posts")
@@ -39,7 +40,16 @@ public class UserPostController {
     private UserPostLikeRepository userPostLikeRepository;
     @Autowired
     private CommentService commentService;
-
+    @Autowired
+    private NotificationService notificationService;
+    @ModelAttribute
+    public void addAttributes(Model model, Principal principal) {
+        if (principal != null) {
+            User currentUser = userRepository.findByUsername(principal.getName());
+            int unreadNotificationCount = notificationService.getUnreadNotifications(currentUser).size();
+            model.addAttribute("unreadNotificationCount", unreadNotificationCount);
+        }
+    }
     @GetMapping
     public String getAllUserPosts(@RequestParam(value = "selectedClass", required = false) Long selectedClassId,
                                   @RequestParam(value = "selectedSubject", required = false) Long selectedSubjectId,
@@ -52,12 +62,16 @@ public class UserPostController {
         } else if (selectedSubjectId != null) {
             userPosts = userPostService.getUserPostsBySubject(selectedSubjectId);
         } else {
-            userPosts = userPostService.getAllUserPostsWithUser();
+            userPosts = userPostService.getAllApprovedUserPosts();
         }
+
+        userPosts = userPosts.stream().filter(User_Post::isApproved).collect(Collectors.toList());
 
         for (User_Post userPost : userPosts) {
             userPost.setCommentCount(commentService.countCommentsByUserPostId(userPost.getId()));
         }
+
+        userPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
 
         model.addAttribute("userPosts", userPosts);
         model.addAttribute("classEntities", classService.getAllClasses());
@@ -67,6 +81,8 @@ public class UserPostController {
 
         return "user-post/list";
     }
+
+
 
 
     @GetMapping("/new")
@@ -164,6 +180,8 @@ public class UserPostController {
             newLike.setUserPost(userPost);
             userPostLikeRepository.save(newLike);
             userPost.setLikes(userPost.getLikes() + 1);
+            notificationService.createLikeNotification(userPost, user);
+
         }
 
         userPostService.updateUserPost(userPost);
@@ -192,8 +210,8 @@ public class UserPostController {
         comment.setContent(content);
         comment.setUser(user);
         comment.setUserPost(userPost);
-
         commentService.addComment(comment);
+        notificationService.createCommentNotification(userPost, user);
         return "redirect:/user-posts/" + postId;
     }
 
@@ -202,5 +220,17 @@ public class UserPostController {
         User user = userRepository.findByUsername(principal.getName());
         commentService.deleteComment(commentId, user);
         return "redirect:/user-posts/" + postId;
+    }
+    @GetMapping("/notifications")
+    public String getNotifications(Model model, Principal principal) {
+        User currentUser = userRepository.findByUsername(principal.getName());
+        List<Notification> notifications = notificationService.getUnreadNotifications(currentUser);
+        model.addAttribute("notifications", notifications);
+        return "user-post/notifications";
+    }
+    @PostMapping("/notifications/{id}/mark-as-read")
+    public String markNotificationAsRead(@PathVariable Long id) {
+        notificationService.markNotificationAsRead(id);
+        return "redirect:/user-posts/notifications";
     }
 }

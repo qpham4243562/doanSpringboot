@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
     <title>Manage Roles - My App</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Include CSS from layout -->
+    <th:block th:replace="~{layout :: link-css}"></th:block>
 </head>
-<body>
-<div th:replace="~{layout :: link-css}"></div>
+<body layout:decorate="~{layout}">
+<!-- Include header from layout -->
+<th:block th:replace="~{layout :: header}"></th:block>
 
-<div class="container">
-    <div th:fragment="content">
+<main layout:fragment="content">
+    <div class="container">
         <h1 class="mb-4">Manage Roles</h1>
         <form th:action="@{/admin/roles/assign}" method="post">
             <div class="row">
@@ -34,8 +37,9 @@
             <p th:text="${message}"></p>
         </div>
     </div>
-</div>
+</main>
 
-<div th:replace="~{layout :: footer}"></div>
+<!-- Include footer from layout -->
+<th:block th:replace="~{layout :: footer}"></th:block>
 </body>
 </html>

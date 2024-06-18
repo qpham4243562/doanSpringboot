@@ -66,4 +66,6 @@ public class User {
     public String getBase64Image() {
         return Base64.encodeBase64String(image);
     }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
 }

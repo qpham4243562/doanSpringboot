@@ -45,11 +45,24 @@
           <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
             <a class="nav-link" href="/admin/roles">Quản lý quyền</a>
           </li>
+          <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+            <a class="nav-link" href="/admin/unapproved">Duyệt bài đăng</a>
+          </li>
         </ul>
         <form class="d-flex align-items-center">
           <input type="text" placeholder="Nội dung tìm kiếm" class="form-control me-2" style="width: 200px;">
-          <i class="bi bi-bell mx-2"></i>
-          <i class="bi bi-chat-dots-fill mx-2"></i>
+          <a href="/user-posts/notifications" class="position-relative mx-2">
+            <i class="bi bi-bell"></i>
+            <span th:if="${unreadNotificationCount > 0}"
+                  th:text="${unreadNotificationCount}"
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              0
+              <span class="visually-hidden">unread notifications</span>
+            </span>
+          </a>
+          <a href="/chat" class="position-relative mx-2">
+            <i class="bi bi-chat-dots-fill mx-2"></i></a>
+
           <div class="dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="bi bi-person-circle mx-2"></i>

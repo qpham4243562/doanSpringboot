@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <title>Unapproved Posts</title>
+  <!-- Include CSS from layout -->
+  <th:block th:replace="~{layout :: link-css}"></th:block>
+  <style>
+    .post-images img {
+      max-width: 100px;
+      max-height: 100px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body layout:decorate="~{layout}">
+<!-- Include header from layout -->
+<th:block th:replace="~{layout :: header}"></th:block>
+
+<main layout:fragment="content">
+  <h1>Unapproved Posts</h1>
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Content</th>
+      <th>Images</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post : ${unapprovedPosts}">
+      <td th:text="${post.id}"></td>
+      <td th:text="${post.content}"></td>
+      <td class="post-images">
+        <div th:each="image : ${post.images}">
+          <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+        </div>
+      </td>
+      <td>
+        <form th:action="@{/admin/{id}/approve(id=${post.id})}" method="post">
+          <button type="submit">Approve</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</main>
+
+<!-- Include footer from layout -->
+<th:block th:replace="~{layout :: footer}"></th:block>
+</body>
+</html>

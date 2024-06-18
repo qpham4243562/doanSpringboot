@@ -70,4 +70,16 @@ public class UserPostService {
     public List<User_Post> getUserPostsBySubject(Long subjectId) {
         return userPostRepository.findBySubjectEntityId(subjectId);
     }
+    public List<User_Post> getAllUnapprovedPosts() {
+        return userPostRepository.findByApproved(false);
+    }
+
+    public User_Post approvePost(Long id) {
+        User_Post userPost = userPostRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+        userPost.setApproved(true);
+        return userPostRepository.save(userPost);
+    }
+    public List<User_Post> getAllApprovedUserPosts() {
+        return userPostRepository.findByApproved(true);
+    }
 }
