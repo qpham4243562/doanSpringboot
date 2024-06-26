@@ -41,6 +41,9 @@
         <form th:action="@{/admin/{id}/approve(id=${post.id})}" method="post">
           <button type="submit">Approve</button>
         </form>
+        <form th:action="@{/admin/{id}/delete(id=${post.id})}" method="post">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
       </td>
     </tr>
     </tbody>

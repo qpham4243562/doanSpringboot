@@ -1,6 +1,7 @@
 package com.bookstore.controller;
 
 import com.bookstore.entity.User_Post;
+import com.bookstore.services.NotificationService;
 import com.bookstore.services.RoleService;
 import com.bookstore.services.UserPostService;
 import com.bookstore.services.UserServices;
@@ -24,6 +25,8 @@ public class AdminController {
     private RoleService roleService;
     @Autowired
     private UserPostService userPostService;
+    @Autowired
+    private NotificationService notificationService;
     @GetMapping("/roles")
     public String manageRoles(Model model) {
         model.addAttribute("users", userService.getAllUsers());
@@ -48,7 +51,16 @@ public class AdminController {
 
     @PostMapping("/{id}/approve")
     public String approvePost(@PathVariable Long id) {
-        userPostService.approvePost(id);
+        User_Post post = userPostService.approvePost(id);
+        notificationService.createApprovedNotification(post);
+        return "redirect:/admin/unapproved";
+    }
+
+    @PostMapping("/{id}/delete")
+    public String deletePost(@PathVariable Long id) {
+        User_Post post = userPostService.getUserPostById(id);
+        userPostService.deleteUserPost(id);
+        notificationService.createDeletedNotification(post);
         return "redirect:/admin/unapproved";
     }
 }

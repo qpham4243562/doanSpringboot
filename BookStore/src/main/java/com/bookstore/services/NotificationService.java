@@ -33,7 +33,23 @@ public class NotificationService {
         notification.setCreatedAt(new Date());
         notificationRepository.save(notification);
     }
+    public void createApprovedNotification(User_Post userPost) {
+        Notification notification = new Notification();
+        notification.setUser(userPost.getUser());
+        notification.setMessage("Bài viết của bạn đã được phê duyệt.");
+        notification.setRead(false);
+        notification.setCreatedAt(new Date());
+        notificationRepository.save(notification);
+    }
 
+    public void createDeletedNotification(User_Post userPost) {
+        Notification notification = new Notification();
+        notification.setUser(userPost.getUser());
+        notification.setMessage("Bài viết của bạn đã bị xóa do vi phạm quy tắc cộng đồng.");
+        notification.setRead(false);
+        notification.setCreatedAt(new Date());
+        notificationRepository.save(notification);
+    }
     public List<Notification> getUnreadNotifications(User user) {
         return notificationRepository.findByUserAndIsReadFalse(user);
     }
