@@ -42,6 +42,10 @@ public class UserPostController {
     private CommentService commentService;
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private PostReportService postReportService;
+
+
     @ModelAttribute
     public void addAttributes(Model model, Principal principal) {
         if (principal != null) {
@@ -232,5 +236,12 @@ public class UserPostController {
     public String markNotificationAsRead(@PathVariable Long id) {
         notificationService.markNotificationAsRead(id);
         return "redirect:/user-posts/notifications";
+    }
+    @PostMapping("/{id}/report")
+    public String reportUserPost(@PathVariable Long id, @RequestParam String reason, Principal principal) {
+        User_Post userPost = userPostService.getUserPostById(id);
+        User reporter = userRepository.findByUsername(principal.getName());
+        postReportService.createReport(userPost, reporter, reason);
+        return "redirect:/user-posts/" + id;
     }
 }

@@ -1,10 +1,8 @@
 package com.bookstore.controller;
 
+import com.bookstore.entity.PostReport;
 import com.bookstore.entity.User_Post;
-import com.bookstore.services.NotificationService;
-import com.bookstore.services.RoleService;
-import com.bookstore.services.UserPostService;
-import com.bookstore.services.UserServices;
+import com.bookstore.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -23,10 +21,16 @@ public class AdminController {
 
     @Autowired
     private RoleService roleService;
+
     @Autowired
     private UserPostService userPostService;
+
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private PostReportService postReportService;
+
     @GetMapping("/roles")
     public String manageRoles(Model model) {
         model.addAttribute("users", userService.getAllUsers());
@@ -42,6 +46,7 @@ public class AdminController {
         model.addAttribute("roles", roleService.getAllRoles());
         return "admin/manage-roles";
     }
+
     @GetMapping("/unapproved")
     public String showUnapprovedPosts(Model model) {
         List<User_Post> unapprovedPosts = userPostService.getAllUnapprovedPosts();
@@ -62,5 +67,31 @@ public class AdminController {
         userPostService.deleteUserPost(id);
         notificationService.createDeletedNotification(post);
         return "redirect:/admin/unapproved";
+    }
+
+
+
+    @GetMapping("/reports")
+    public String showReports(Model model) {
+        List<PostReport> pendingReports = postReportService.getPendingReports();
+        model.addAttribute("pendingReports", pendingReports);
+        return "admin/reports";
+    }
+
+    @PostMapping("/reports/{reportId}/resolve")
+    public String resolveReport(@PathVariable Long reportId, @RequestParam String action) {
+        PostReport report = postReportService.getReportById(reportId);
+        if ("delete".equals(action)) {
+            userPostService.deleteUserPost(report.getUserPost().getId());
+            notificationService.createDeletedNotification(report.getUserPost());
+        }
+        postReportService.resolveReport(reportId);
+        return "redirect:/admin/reports";
+    }
+
+    @PostMapping("/reports/{reportId}/dismiss")
+    public String dismissReport(@PathVariable Long reportId) {
+        postReportService.dismissReport(reportId);
+        return "redirect:/admin/reports";
     }
 }

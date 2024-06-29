@@ -110,7 +110,12 @@
         <a th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
         <a th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
         <a th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
+        <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post">
+          <input type="text" name="reason" placeholder="Reason for reporting" required>
+          <button type="submit">Report Post</button>
+        </form>
       </td>
+
     </tr>
     </tbody>
   </table>

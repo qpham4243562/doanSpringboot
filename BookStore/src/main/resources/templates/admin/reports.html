@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Reports</title>
+  <!-- Replace link CSS from layout -->
+  <th:block th:replace="~{layout :: link-css}"></th:block>
+</head>
+<body layout:decorate="~{layout}">
+<!-- Replace header from layout -->
+<th:block th:replace="~{layout :: header}"></th:block>
+
+<main layout:fragment="content">
+  <div class="container mt-4">
+    <h1>Pending Reports</h1>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Post ID</th>
+        <th>Reporter</th>
+        <th>Reason</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="report : ${pendingReports}">
+        <td th:text="${report.userPost.id}"></td>
+        <td th:text="${report.reporter.username}"></td>
+        <td th:text="${report.reason}"></td>
+        <td>
+          <form th:action="@{/admin/reports/{reportId}/resolve(reportId=${report.id})}" method="post" class="d-inline">
+            <button type="submit" name="action" value="keep" class="btn btn-success btn-sm">Keep Post</button>
+          </form>
+          <form th:action="@{/admin/{id}/delete(id=${report.userPost.id})}" method="post" class="d-inline">
+            <button type="submit" class="btn btn-danger btn-sm">Delete Post</button>
+          </form>
+          <form th:action="@{/admin/reports/{reportId}/dismiss(reportId=${report.id})}" method="post" class="d-inline">
+            <button type="submit" class="btn btn-warning btn-sm">Dismiss Report</button>
+          </form>
+          <a th:href="@{/user-posts/{id}(id=${report.userPost.id})}" class="btn btn-info btn-sm">View Details</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- Replace footer from layout -->
+<th:block th:replace="~{layout :: footer}"></th:block>
+</body>
+</html>

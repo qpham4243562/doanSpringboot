@@ -49,6 +49,8 @@ public class User_Post {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+    @OneToMany(mappedBy = "userPost", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostReport> reports;
     public int getCommentCount() {
         return comments != null ? comments.size() : 0;
     }
