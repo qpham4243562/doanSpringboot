@@ -136,7 +136,7 @@ public class UserPostController {
         model.addAttribute("userPost", userPost);
         model.addAttribute("classEntities", classService.getAllClasses());
         model.addAttribute("subjectEntities", subjectService.getAllSubjects());
-        return "user-post-form";
+        return "user-post/edit";
     }
 
     @PostMapping("/{id}/edit")
@@ -179,7 +179,7 @@ public class UserPostController {
     }
 
     @PostMapping("/{id}/like")
-    public String likeUserPost(@PathVariable Long id, Principal principal) {
+    public ResponseEntity<?> likeUserPost(@PathVariable Long id, Principal principal) {
         User_Post userPost = userPostService.getUserPostById(id);
         User user = userRepository.findByUsername(principal.getName());
 
@@ -195,12 +195,14 @@ public class UserPostController {
             userPostLikeRepository.save(newLike);
             userPost.setLikes(userPost.getLikes() + 1);
             notificationService.createLikeNotification(userPost, user);
-
         }
 
         userPostService.updateUserPost(userPost);
-        return "redirect:/user-posts";
+
+        // Return JSON response with updated like count
+        return ResponseEntity.ok(userPost.getLikes());
     }
+
 
 
     @GetMapping("/{postId}")
@@ -289,4 +291,22 @@ public class UserPostController {
 
         return "redirect:/user-posts/" + id;
     }
+    @GetMapping("/search")
+    public String search(@RequestParam("query") String query, Model model, Principal principal) {
+        List<User> users = userService.searchUsers(query);
+        List<User_Post> userPosts = userPostService.searchPosts(query);
+
+        // Get current user and their followed posts
+        User currentUser = userService.findByUsername(principal.getName());
+        List<User_Post> followedPosts = currentUser.getFollowedPosts();
+
+        // Adding attributes to the model
+        model.addAttribute("users", users);
+        model.addAttribute("userPosts", userPosts);
+        model.addAttribute("followedPosts", followedPosts);
+        model.addAttribute("currentUser", currentUser);
+
+        return "user-post/search";
+    }
+
 }

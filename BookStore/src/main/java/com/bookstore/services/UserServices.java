@@ -116,5 +116,10 @@ public class UserServices {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
-
+    public List<User> searchUsers(String query) {
+        return userRepository.findByNameContaining(query);
+    }
+    public User findById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
 }

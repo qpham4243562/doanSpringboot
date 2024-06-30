@@ -85,4 +85,7 @@ public class UserPostService {
     public List<User_Post> getUserPostsByUser(User user) {
         return userPostRepository.findByUserOrderByCreatedAtDesc(user);
     }
+    public List<User_Post> searchPosts(String query) {
+        return userPostRepository.findByContentContaining(query);
+    }
 }

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface IUserRepository extends JpaRepository<User, Long> { // Chuyển từ Integer sang Long cho id
     @Query("SELECT u FROM User u WHERE u.username = ?1")
@@ -33,5 +35,7 @@ public interface IUserRepository extends JpaRepository<User, Long> { // Chuyển
     User findByEmail(String email);
 
     User findByResetPasswordToken(String token);
+
+    List<User> findByNameContaining(String name);
 
 }

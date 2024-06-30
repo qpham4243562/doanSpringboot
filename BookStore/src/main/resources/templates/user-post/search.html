@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <title>Kết quả tìm kiếm</title>
+  <th:block th:replace="layout :: link-css"></th:block>
+  <style>
+    .avatar-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .post-images img {
+      max-width: 100px; /* Example size for post images */
+      max-height: 100px; /* Example size for post images */
+      object-fit: cover;
+      margin-right: 5px;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+<header th:replace="layout :: header"></header>
+
+<main layout:fragment="content">
+  <h1>Kết quả tìm kiếm</h1>
+
+  <div th:if="${users.size() > 0}">
+    <h2>Người dùng</h2>
+    <ul>
+      <li th:each="user : ${users}">
+        <a th:href="@{/profile(userId=${user.id})}">
+          <img th:if="${user.image != null}"
+               th:src="'data:image/jpeg;base64,' + ${user.getBase64Image()}"
+               class="avatar-image" alt="Avatar" />
+          <span th:text="${user.name}"></span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div th:if="${userPosts.size() > 0}">
+    <h2>Bài đăng</h2>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Created By</th>
+        <th>Image Profile</th>
+        <th>Content</th>
+        <th>Class</th>
+        <th>Subject</th>
+        <th>Created At</th>
+        <th>Updated At</th>
+        <th>Images</th>
+        <th>Likes</th>
+        <th>Comments</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="userPost : ${userPosts}">
+        <td th:text="${userPost.user.name}"></td>
+        <td>
+          <img th:if="${userPost.user.image != null}"
+               th:src="'data:image/jpeg;base64,' + ${userPost.user.getBase64Image()}"
+               class="avatar-image" alt="Avatar" />
+        </td>
+        <td th:text="${userPost.content}"></td>
+        <td th:text="${userPost.classEntity.name}"></td>
+        <td th:text="${userPost.subjectEntity.name}"></td>
+        <td th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td th:text="${#dates.format(userPost.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td class="post-images">
+          <div th:each="image : ${userPost.images}">
+            <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}"
+                 alt="Post Image" />
+          </div>
+        </td>
+        <td th:text="${userPost.likes}"></td>
+        <td th:text="${userPost.commentCount}"></td>
+        <td>
+          <form th:action="@{/user-posts/{id}/like(id=${userPost.id})}" method="post">
+            <button type="submit" th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}"></button>
+          </form>
+          <a th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
+          <a th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
+          <a th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
+          <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post">
+            <input type="text" name="reason" placeholder="Reason for reporting" required>
+            <button type="submit">Report Post</button>
+          </form>
+          <form th:if="${#lists.contains(followedPosts, userPost)}"
+                th:action="@{/user-posts/{id}/unfollow(id=${userPost.id})}" method="post">
+            <button type="submit">Unfollow</button>
+          </form>
+          <form th:unless="${#lists.contains(followedPosts, userPost)}"
+                th:action="@{/user-posts/{id}/follow(id=${userPost.id})}" method="post">
+            <button type="submit">Follow</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer th:replace="layout :: footer"></footer>
+</body>
+</html>

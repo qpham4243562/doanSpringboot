@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit User Post</title>
+  <!-- Replace link CSS from layout -->
+  <th:block th:replace="~{layout :: link-css}"></th:block>
+</head>
+<body layout:decorate="~{layout}">
+<!-- Replace header from layout -->
+<th:block th:replace="~{layout :: header}"></th:block>
+
+<main layout:fragment="content">
+  <h1>Edit User Post</h1>
+  <form th:action="@{/user-posts/{id}/edit(id=${userPost.id})}" th:object="${userPost}" method="post" enctype="multipart/form-data">
+    <div>
+      <label for="content">Content:</label>
+      <textarea id="content" th:field="*{content}"></textarea>
+    </div>
+    <div>
+      <label for="classEntity">Class:</label>
+      <select id="classEntity" th:field="*{classEntity}">
+        <option th:each="classEntity : ${classEntities}"
+                th:value="${classEntity.id}"
+                th:text="${classEntity.name}"
+                th:selected="${classEntity.id == userPost.classEntity.id}"></option>
+      </select>
+    </div>
+    <div>
+      <label for="subjectEntity">Subject:</label>
+      <select id="subjectEntity" th:field="*{subjectEntity}">
+        <option th:each="subjectEntity : ${subjectEntities}"
+                th:value="${subjectEntity.id}"
+                th:text="${subjectEntity.name}"
+                th:selected="${subjectEntity.id == userPost.subjectEntity.id}"></option>
+      </select>
+    </div>
+    <div>
+      <label for="images">Add New Images:</label>
+      <input type="file" id="images" name="images" multiple>
+    </div>
+    <!-- Display existing images -->
+    <div th:if="${userPost.images != null and not #lists.isEmpty(userPost.images)}">
+      <h3>Existing Images:</h3>
+      <div th:each="image : ${userPost.images}">
+        <img th:src="@{/user-posts/images/{id}(id=${image.id})}" alt="Post Image" style="max-width: 200px;">
+      </div>
+    </div>
+    <button type="submit">Update User Post</button>
+  </form>
+</main>
+
+<!-- Replace footer from layout -->
+<th:block th:replace="~{layout :: footer}"></th:block>
+</body>
+</html>

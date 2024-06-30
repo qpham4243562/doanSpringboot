@@ -17,4 +17,6 @@
         List<User_Post> findByClassEntityIdAndSubjectEntityId(Long classId, Long subjectId);
         List<User_Post> findByApproved(boolean approved);
         List<User_Post> findByUserOrderByCreatedAtDesc(User user);
+        List<User_Post> findByContentContaining(String content);
+
     }

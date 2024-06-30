@@ -58,9 +58,17 @@ public class UserController {
         return "redirect:/login";
     }
     @GetMapping("/profile")
-    public String showProfile(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        String username = userDetails.getUsername();
-        User user = userService.findByUsername(username);
+    public String showProfile(@RequestParam(required = false) Long userId, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        User user;
+        if (userId != null) {
+            user = userService.findById(userId);
+            if (user == null) {
+                return "redirect:/";  // or to an error page
+            }
+        } else {
+            String username = userDetails.getUsername();
+            user = userService.findByUsername(username);
+        }
 
         // Convert image to Base64
         String imageBase64 = null;

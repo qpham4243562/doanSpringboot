@@ -25,6 +25,17 @@
     .nav-link.dropdown-toggle::after {
       display: none; /* Hide the dropdown arrow */
     }
+    .search-input {
+      color: black;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.25rem;
+    }
+
+    .search-input::placeholder {
+      color: #555;
+    }
+
   </style>
 </head>
 <body>
@@ -32,7 +43,7 @@
   <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container-fluid">
       <a class="navbar-brand" href="/user-posts">
-        <img src="../image/Logo.png" alt="Logo" style="height: 40px;">
+        <img src="/image/Logo.png" alt="Logo" style="height: 40px;">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
               data-bs-target="#navbarSupportedContent"
@@ -52,8 +63,10 @@
             <a class="nav-link" href="/admin/reports">Quản lý báo cáo</a>
           </li>
         </ul>
+        <form class=" search-input" th:action="@{/user-posts/search}" method="get">
+          <input type="text" name="query" placeholder="Nội dung tìm kiếm" >
+        </form>
         <form class="d-flex align-items-center">
-          <input type="text" placeholder="Nội dung tìm kiếm" class="form-control me-2" style="width: 200px;">
           <a href="/user-posts/notifications" class="position-relative mx-2">
             <i class="bi bi-bell"></i>
             <span th:if="${unreadNotificationCount > 0}"

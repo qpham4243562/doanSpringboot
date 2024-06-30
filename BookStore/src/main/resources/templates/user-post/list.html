@@ -14,6 +14,7 @@
       color: white;
     }
   </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Replace link CSS from layout -->
   <th:block th:replace="~{layout :: link-css}"></th:block>
 </head>
@@ -101,12 +102,13 @@
           <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
         </div>
       </td>
-      <td th:text="${userPost.likes}"></td>
+      <td >  <span class="like-count" th:text="${userPost.likes}"></span></td>
       <td th:text="${userPost.commentCount}"></td>
       <td>
-        <form th:action="@{/user-posts/{id}/like(id=${userPost.id})}" method="post">
-          <button type="submit" th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}"></button>
-        </form>
+
+        <button type="button" class="like-btn" th:data-post-id="${userPost.id}"
+                th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
+        </button>
         <a th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
         <a th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
         <a th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
@@ -131,5 +133,31 @@
 
 <!-- Replace footer from layout -->
 <th:block th:replace="~{layout :: footer}"></th:block>
+
+<script th:inline="javascript">
+  $(document).ready(function() {
+    $('.like-btn').click(function(event) {
+      event.preventDefault();
+      var button = $(this);
+      var postId = button.data('post-id');
+      var row = button.closest('tr');
+      var likeCountElement = row.find('.like-count');
+
+      $.ajax({
+        url: '/user-posts/' + postId + '/like',
+        type: 'POST',
+        success: function(data) {
+          // Cập nhật UI với số lượt thích mới
+          likeCountElement.text(data);
+        },
+        error: function(xhr, status, error) {
+          console.error('Error:', error);
+          alert('Đã xảy ra lỗi khi thực hiện yêu cầu.');
+        }
+      });
+    });
+  });
+</script>
+
 </body>
 </html>
