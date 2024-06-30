@@ -114,6 +114,14 @@
           <input type="text" name="reason" placeholder="Reason for reporting" required>
           <button type="submit">Report Post</button>
         </form>
+        <form th:if="${#lists.contains(followedPosts, userPost)}"
+              th:action="@{/user-posts/{id}/unfollow(id=${userPost.id})}" method="post">
+          <button type="submit">Unfollow</button>
+        </form>
+        <form th:unless="${#lists.contains(followedPosts, userPost)}"
+              th:action="@{/user-posts/{id}/follow(id=${userPost.id})}" method="post">
+          <button type="submit">Follow</button>
+        </form>
       </td>
 
     </tr>

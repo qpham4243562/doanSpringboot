@@ -2,6 +2,8 @@ package com.bookstore.controller;
 
 import com.bookstore.dto.ProfileDTO;
 import com.bookstore.entity.User;
+import com.bookstore.entity.User_Post;
+import com.bookstore.services.UserPostService;
 import com.bookstore.services.UserServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class UserController {
         return "user/login";
     }
 
+    @Autowired
+    private UserPostService userPostService;
     @GetMapping("/register")
     public String register(Model model) {
         model.addAttribute("user", new User());
@@ -58,14 +62,22 @@ public class UserController {
         String username = userDetails.getUsername();
         User user = userService.findByUsername(username);
 
-        // Chuyển đổi dữ liệu ảnh thành chuỗi Base64
+        // Convert image to Base64
         String imageBase64 = null;
         if (user.getImage() != null) {
             imageBase64 = Base64.getEncoder().encodeToString(user.getImage());
         }
 
+        // Get user's posts
+        List<User_Post> userPosts = userPostService.getUserPostsByUser(user);
+
+        // Get followed posts
+        List<User_Post> followedPosts = user.getFollowedPosts();
+
         model.addAttribute("user", user);
         model.addAttribute("imageBase64", imageBase64);
+        model.addAttribute("userPosts", userPosts);
+        model.addAttribute("followedPosts", followedPosts);
 
         ProfileDTO profileDTO = new ProfileDTO();
         model.addAttribute("profileDTO", profileDTO);

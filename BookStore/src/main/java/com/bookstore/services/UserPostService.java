@@ -82,4 +82,7 @@ public class UserPostService {
     public List<User_Post> getAllApprovedUserPosts() {
         return userPostRepository.findByApproved(true);
     }
+    public List<User_Post> getUserPostsByUser(User user) {
+        return userPostRepository.findByUserOrderByCreatedAtDesc(user);
+    }
 }

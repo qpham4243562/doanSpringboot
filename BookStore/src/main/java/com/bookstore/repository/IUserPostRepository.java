@@ -1,6 +1,7 @@
     package com.bookstore.repository;
 
     import com.bookstore.entity.Role;
+    import com.bookstore.entity.User;
     import com.bookstore.entity.User_Post;
     import org.springframework.data.jpa.repository.JpaRepository;
     import org.springframework.data.jpa.repository.Query;
@@ -15,4 +16,5 @@
         List<User_Post> findAllWithUser();
         List<User_Post> findByClassEntityIdAndSubjectEntityId(Long classId, Long subjectId);
         List<User_Post> findByApproved(boolean approved);
+        List<User_Post> findByUserOrderByCreatedAtDesc(User user);
     }

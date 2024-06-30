@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.apache.commons.codec.binary.Base64;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -59,6 +60,15 @@ public class User {
     }
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User_Post> userPosts;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_followed_posts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    private List<User_Post> followedPosts = new ArrayList<>();
+
+
 
     public void setUserPostLikes(List<UserPostLike> userPostLikes) {
         this.userPostLikes = userPostLikes;
@@ -68,4 +78,19 @@ public class User {
     }
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notifications;
+    public List<User_Post> getFollowedPosts() {
+        return followedPosts;
+    }
+
+    public void setFollowedPosts(List<User_Post> followedPosts) {
+        this.followedPosts = followedPosts;
+    }
+
+    public void followPost(User_Post post) {
+        this.followedPosts.add(post);
+    }
+
+    public void unfollowPost(User_Post post) {
+        this.followedPosts.remove(post);
+    }
 }

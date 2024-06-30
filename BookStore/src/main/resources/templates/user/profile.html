@@ -10,6 +10,13 @@
       });
     });
   </script>
+  <style>
+    .post-images img {
+      max-width: 100px;
+      max-height: 100px;
+      margin-right: 10px;
+    }
+  </style>
   <!-- Replace link CSS from layout -->
   <th:block th:replace="~{layout :: link-css}"></th:block>
 </head>
@@ -20,7 +27,7 @@
 <main layout:fragment="content">
   <h1>Profile</h1>
   <div>
-    <img th:if="${imageBase64 != null}" th:src="'data:image/jpeg;base64,' + ${imageBase64}" alt="Profile Image" />
+    <img th:if="${imageBase64 != null}" th:src="'data:image/jpeg;base64,' + ${imageBase64}" alt="Profile Image" width="100" height="100" />
     <p>Name: <span th:text="${user.name}"></span></p>
     <button id="updateButton" class="btn btn-primary">Update Profile</button>
   </div>
@@ -35,6 +42,96 @@
     </div>
     <button type="submit" class="btn btn-primary">Update</button>
   </form>
+
+  <!-- User's Posts -->
+  <h2>Your Posts</h2>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Content</th>
+      <th>Class</th>
+      <th>Subject</th>
+      <th>Created At</th>
+      <th>Updated At</th>
+      <th>Images</th>
+      <th>Likes</th>
+      <th>Comments</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="userPost : ${userPosts}">
+      <td th:text="${userPost.content}"></td>
+      <td th:text="${userPost.classEntity.name}"></td>
+      <td th:text="${userPost.subjectEntity.name}"></td>
+      <td th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+      <td th:text="${#dates.format(userPost.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+      <td class="post-images">
+        <div th:each="image : ${userPost.images}">
+          <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+        </div>
+      </td>
+      <td th:text="${userPost.likes}"></td>
+      <td th:text="${userPost.commentCount}"></td>
+      <td>
+        <a th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
+        <a th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
+        <a th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- Followed Posts -->
+  <h2>Followed Posts</h2>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Created By</th>
+      <th>Image Profile</th>
+      <th>Content</th>
+      <th>Class</th>
+      <th>Subject</th>
+      <th>Created At</th>
+      <th>Updated At</th>
+      <th>Images</th>
+      <th>Likes</th>
+      <th>Comments</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post : ${followedPosts}">
+      <td th:text="${post.user.name}"></td>
+      <td>
+        <img th:if="${post.user.image != null}"
+             th:src="'data:image/jpeg;base64,' + ${post.user.getBase64Image()}"
+             width="50" height="50" />
+      </td>
+      <td th:text="${post.content}"></td>
+      <td th:text="${post.classEntity.name}"></td>
+      <td th:text="${post.subjectEntity.name}"></td>
+      <td th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+      <td th:text="${#dates.format(post.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+      <td class="post-images">
+        <div th:each="image : ${post.images}">
+          <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+        </div>
+      </td>
+      <td th:text="${post.likes}"></td>
+      <td th:text="${post.commentCount}"></td>
+      <td>
+        <form th:action="@{/user-posts/{id}/like(id=${post.id})}" method="post">
+          <button type="submit" th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}"></button>
+        </form>
+        <a th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
+        <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}" method="post">
+          <button type="submit">Unfollow</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
 </main>
 
 <!-- Replace footer from layout -->

@@ -16,6 +16,9 @@
 <th:block th:replace="~{layout :: header}"></th:block>
 
 <main layout:fragment="content">
+  <div th:if="${message}" class="alert alert-info">
+    <span th:text="${message}"></span>
+  </div>
   <h1 th:text="${userPost.content}">User Post Content</h1>
   <div>
     <span>Class: </span><span th:text="${userPost.classEntity.name}">Class Name</span>

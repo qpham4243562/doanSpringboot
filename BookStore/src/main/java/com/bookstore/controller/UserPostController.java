@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -57,7 +58,8 @@ public class UserPostController {
     @GetMapping
     public String getAllUserPosts(@RequestParam(value = "selectedClass", required = false) Long selectedClassId,
                                   @RequestParam(value = "selectedSubject", required = false) Long selectedSubjectId,
-                                  Model model) {
+                                  Model model,
+                                  Principal principal) {
         List<User_Post> userPosts;
         if (selectedClassId != null && selectedSubjectId != null) {
             userPosts = userPostService.getUserPostsByClassAndSubject(selectedClassId, selectedSubjectId);
@@ -77,11 +79,19 @@ public class UserPostController {
 
         userPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
 
+        // Lấy thông tin người dùng hiện tại
+        User currentUser = userService.findByUsername(principal.getName());
+
+        // Lấy danh sách các bài viết đã follow
+        List<User_Post> followedPosts = currentUser.getFollowedPosts();
+
         model.addAttribute("userPosts", userPosts);
         model.addAttribute("classEntities", classService.getAllClasses());
         model.addAttribute("subjectEntities", subjectService.getAllSubjects());
         model.addAttribute("selectedClassId", selectedClassId);
         model.addAttribute("selectedSubjectId", selectedSubjectId);
+        model.addAttribute("followedPosts", followedPosts);
+        model.addAttribute("currentUser", currentUser);
 
         return "user-post/list";
     }
@@ -242,6 +252,41 @@ public class UserPostController {
         User_Post userPost = userPostService.getUserPostById(id);
         User reporter = userRepository.findByUsername(principal.getName());
         postReportService.createReport(userPost, reporter, reason);
+        return "redirect:/user-posts/" + id;
+    }
+    @PostMapping("/{id}/follow")
+    public String followUserPost(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
+        User_Post userPost = userPostService.getUserPostById(id);
+        User currentUser = userRepository.findByUsername(principal.getName());
+
+        if (userPost.getUser().equals(currentUser)) {
+            redirectAttributes.addFlashAttribute("message", "Bạn không thể theo dõi bài viết của chính mình.");
+        } else if (!currentUser.getFollowedPosts().contains(userPost)) {
+            currentUser.followPost(userPost);
+            userService.save(currentUser);
+            redirectAttributes.addFlashAttribute("message", "Đã theo dõi bài viết thành công.");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Bạn đã theo dõi bài viết này rồi.");
+        }
+
+        return "redirect:/user-posts/" + id;
+    }
+
+    @PostMapping("/{id}/unfollow")
+    public String unfollowUserPost(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
+        User_Post userPost = userPostService.getUserPostById(id);
+        User currentUser = userRepository.findByUsername(principal.getName());
+
+        if (userPost.getUser().equals(currentUser)) {
+            redirectAttributes.addFlashAttribute("message", "Bạn không thể hủy theo dõi bài viết của chính mình.");
+        } else if (currentUser.getFollowedPosts().contains(userPost)) {
+            currentUser.unfollowPost(userPost);
+            userService.save(currentUser);
+            redirectAttributes.addFlashAttribute("message", "Đã hủy theo dõi bài viết thành công.");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Bạn chưa theo dõi bài viết này.");
+        }
+
         return "redirect:/user-posts/" + id;
     }
 }
