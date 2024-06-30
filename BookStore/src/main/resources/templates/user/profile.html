@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
 <head>
   <title>Profile</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <script>
     $(document).ready(function() {
       $("#updateButton").click(function() {
@@ -19,6 +19,9 @@
   </style>
   <!-- Replace link CSS from layout -->
   <th:block th:replace="~{layout :: link-css}"></th:block>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/js/custom_js.js"></script>
+
 </head>
 <body layout:decorate="~{layout}">
 <!-- Replace header from layout -->
@@ -118,12 +121,12 @@
           <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
         </div>
       </td>
-      <td th:text="${post.likes}"></td>
+      <td><span class="like-count" th:text="${post.likes}"></span></td>
       <td th:text="${post.commentCount}"></td>
       <td>
-        <form th:action="@{/user-posts/{id}/like(id=${post.id})}" method="post">
-          <button type="submit" th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}"></button>
-        </form>
+        <button type="button" class="like-btn" th:data-post-id="${post.id}"
+                th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
+        </button>
         <a th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
         <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}" method="post">
           <button type="submit">Unfollow</button>

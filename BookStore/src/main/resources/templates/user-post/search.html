@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <title>Kết quả tìm kiếm</title>
   <th:block th:replace="layout :: link-css"></th:block>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/js/custom_js.js"></script>
   <style>
     .avatar-image {
       width: 50px;
@@ -77,14 +80,12 @@
                  alt="Post Image" />
           </div>
         </td>
-        <td th:text="${userPost.likes}"></td>
+        <td><span class="like-count" th:text="${userPost.likes}"></span></td>
         <td th:text="${userPost.commentCount}"></td>
         <td>
-          <form th:action="@{/user-posts/{id}/like(id=${userPost.id})}" method="post">
-            <button type="submit" th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}"></button>
-          </form>
-          <a th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
-          <a th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
+          <button type="button" class="like-btn" th:data-post-id="${userPost.id}"
+                  th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
+          </button>
           <a th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
           <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post">
             <input type="text" name="reason" placeholder="Reason for reporting" required>
