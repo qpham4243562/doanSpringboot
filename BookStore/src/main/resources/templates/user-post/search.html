@@ -39,6 +39,8 @@
                class="avatar-image" alt="Avatar" />
           <span th:text="${user.name}"></span>
         </a>
+        <!-- Friend request button -->
+        <button class="friend-request-btn" th:data-friend-id="${user.id}">Kết bạn</button>
       </li>
     </ul>
   </div>

@@ -1,27 +1,35 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
 <head>
   <title>Profile</title>
-
-  <script>
-    $(document).ready(function() {
-      $("#updateButton").click(function() {
-        $("#updateForm").toggle();
-      });
-    });
-  </script>
   <style>
     .post-images img {
       max-width: 100px;
       max-height: 100px;
       margin-right: 10px;
     }
+    .friends-list ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .friends-list li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .friends-list img {
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+    .friends-list form {
+      margin-left: auto;
+    }
   </style>
   <!-- Replace link CSS from layout -->
   <th:block th:replace="~{layout :: link-css}"></th:block>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/js/custom_js.js"></script>
-
 </head>
 <body layout:decorate="~{layout}">
 <!-- Replace header from layout -->
@@ -29,23 +37,35 @@
 
 <main layout:fragment="content">
   <h1>Profile</h1>
-  <div>
+  <div id="profileInfo" th:data-is-own-profile="${isOwnProfile}">
     <img th:if="${imageBase64 != null}" th:src="'data:image/jpeg;base64,' + ${imageBase64}" alt="Profile Image" width="100" height="100" />
     <p>Name: <span th:text="${user.name}"></span></p>
     <button id="updateButton" class="btn btn-primary">Update Profile</button>
   </div>
-  <form id="updateForm" th:action="@{/profile}" method="post" enctype="multipart/form-data" th:object="${profileDTO}" style="display: none;">
-    <div class="form-group">
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" th:field="*{name}" class="form-control" />
-    </div>
-    <div class="form-group">
-      <label for="image">Profile Image:</label>
-      <input type="file" id="image" name="image" accept="image/*" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary">Update</button>
-  </form>
 
+  <div id="updateFormContainer" style="display: none;">
+    <form id="updateForm" th:action="@{/profile}" method="post" enctype="multipart/form-data" th:object="${profileDTO}">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" th:field="*{name}" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label for="image">Profile Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" class="form-control" />
+      </div>
+      <button type="submit" class="btn btn-primary">Update</button>
+      <button type="button" id="cancelButton" class="btn btn-secondary">Cancel</button>
+    </form>
+  </div>
+
+  <!-- Friends List -->
+  <h2>Friends</h2>
+  <ul class="list-group">
+    <li th:each="friend : ${friends}" class="list-group-item d-flex justify-content-between align-items-center">
+      <span th:text="${friend.friend.name}"></span>
+      <button type="button" class="btn btn-danger btn-sm unfriend-btn" th:data-id="${friend.friend.id}">Unfriend</button>
+    </li>
+  </ul>
   <!-- User's Posts -->
   <h2>Your Posts</h2>
   <table class="table">
@@ -77,8 +97,8 @@
       <td th:text="${userPost.likes}"></td>
       <td th:text="${userPost.commentCount}"></td>
       <td>
-        <a th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
-        <a th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
+        <a class="edit-btn" th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
+        <a class="delete-btn" th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
         <a th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
       </td>
     </tr>
@@ -129,7 +149,7 @@
         </button>
         <a th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
         <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}" method="post">
-          <button type="submit">Unfollow</button>
+          <button type="submit" class="unfollow-btn">Unfollow</button>
         </form>
       </td>
     </tr>

@@ -1,5 +1,6 @@
 package com.bookstore.services;
 
+import com.bookstore.entity.Friend;
 import com.bookstore.entity.Notification;
 import com.bookstore.entity.User;
 import com.bookstore.entity.User_Post;
@@ -60,5 +61,25 @@ public class NotificationService {
             notification.setRead(true);
             notificationRepository.save(notification);
         }
+    }
+    public void createFriendRequestNotification(Friend friendRequest) {
+        Notification notification = new Notification();
+        notification.setUser(friendRequest.getFriend());
+        notification.setMessage("Người dùng " + friendRequest.getUser().getName() + " đã gửi cho bạn lời mời kết bạn.");
+        notification.setRead(false);
+        notification.setCreatedAt(new Date());
+        notification.setType("FRIEND_REQUEST");
+        notification.setRelatedUserId(friendRequest.getId());
+        notificationRepository.save(notification);
+    }
+    public void createFriendAcceptedNotification(User fromUser, User toUser) {
+        Notification notification = new Notification();
+        notification.setUser(fromUser);
+        notification.setMessage(toUser.getName() + " đã chấp nhận lời mời kết bạn của bạn.");
+        notification.setRead(false);
+        notification.setCreatedAt(new Date());
+        notification.setType("FRIEND_ACCEPTED");
+        notification.setRelatedUserId(toUser.getId());
+        notificationRepository.save(notification);
     }
 }

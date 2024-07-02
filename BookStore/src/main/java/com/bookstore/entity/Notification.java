@@ -26,4 +26,10 @@ public class Notification {
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+    @Column(name = "type")
+    private String type;
+
+    @Column(name = "related_user_id")
+    private Long relatedUserId;
 }

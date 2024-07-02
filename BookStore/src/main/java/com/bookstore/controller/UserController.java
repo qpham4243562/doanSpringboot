@@ -1,8 +1,10 @@
 package com.bookstore.controller;
 
 import com.bookstore.dto.ProfileDTO;
+import com.bookstore.entity.Friend;
 import com.bookstore.entity.User;
 import com.bookstore.entity.User_Post;
+import com.bookstore.services.FriendRequestService;
 import com.bookstore.services.UserPostService;
 import com.bookstore.services.UserServices;
 import jakarta.validation.Valid;
@@ -29,6 +31,8 @@ public class UserController {
 
     @Autowired
     private UserServices userService;
+    @Autowired
+    private FriendRequestService friendRequestService;
 
     @GetMapping("/login")
     public String login() {
@@ -60,14 +64,17 @@ public class UserController {
     @GetMapping("/profile")
     public String showProfile(@RequestParam(required = false) Long userId, Model model, @AuthenticationPrincipal UserDetails userDetails) {
         User user;
+        boolean isOwnProfile;
         if (userId != null) {
             user = userService.findById(userId);
             if (user == null) {
                 return "redirect:/";  // or to an error page
             }
+            isOwnProfile = user.getUsername().equals(userDetails.getUsername());
         } else {
             String username = userDetails.getUsername();
             user = userService.findByUsername(username);
+            isOwnProfile = true; // Because it's the logged-in user accessing their own profile
         }
 
         // Convert image to Base64
@@ -82,16 +89,22 @@ public class UserController {
         // Get followed posts
         List<User_Post> followedPosts = user.getFollowedPosts();
 
+        // Get friend requests
+        List<Friend> friends = friendRequestService.getFriends(user);
+
         model.addAttribute("user", user);
         model.addAttribute("imageBase64", imageBase64);
         model.addAttribute("userPosts", userPosts);
         model.addAttribute("followedPosts", followedPosts);
+        model.addAttribute("friends", friends);
+        model.addAttribute("isOwnProfile", isOwnProfile);
 
         ProfileDTO profileDTO = new ProfileDTO();
         model.addAttribute("profileDTO", profileDTO);
 
         return "user/profile";
     }
+
     @PostMapping("/profile")
     public String updateProfile(@ModelAttribute("profileDTO") ProfileDTO profileDTO, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
         User currentUser = userService.findByUsername(userDetails.getUsername());
@@ -103,6 +116,7 @@ public class UserController {
         if (profileDTO.getImage() != null && !profileDTO.getImage().isEmpty()) {
             byte[] imageBytes = profileDTO.getImage().getBytes();
             currentUser.setImage(imageBytes);
+
         }
 
         userService.save(currentUser);

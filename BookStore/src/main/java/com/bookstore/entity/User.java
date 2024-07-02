@@ -68,7 +68,32 @@
         )
         private List<User_Post> followedPosts = new ArrayList<>();
 
+        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<Friend> friends;
 
+        @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<Friend> friendRequests;
+
+        // Methods to handle friend requests
+        public void addFriendRequest(Friend friendRequest) {
+            this.friendRequests.add(friendRequest);
+        }
+
+        public void removeFriendRequest(Friend friendRequest) {
+            this.friendRequests.remove(friendRequest);
+        }
+
+        public void acceptFriendRequest(Friend friend) {
+            this.friends.add(friend);
+        }
+
+        public void rejectFriendRequest(Friend friend) {
+            this.removeFriendRequest(friend);
+        }
+
+        public void unfriend(Friend friend) {
+            this.friends.remove(friend);
+        }
 
         public void setUserPostLikes(List<UserPostLike> userPostLikes) {
             this.userPostLikes = userPostLikes;
@@ -78,6 +103,7 @@
         }
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Notification> notifications;
+
         public List<User_Post> getFollowedPosts() {
             return followedPosts;
         }
@@ -93,4 +119,5 @@
         public void unfollowPost(User_Post post) {
             this.followedPosts.remove(post);
         }
+
     }
