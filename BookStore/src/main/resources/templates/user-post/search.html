@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Kết quả tìm kiếm</title>
-  <th:block th:replace="layout :: link-css"></th:block>
-
+  <th:block th:replace="~{layout :: link-css}"></th:block>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/js/custom_js.js"></script>
   <style>
@@ -24,7 +23,7 @@
   </style>
 </head>
 <body>
-<header th:replace="layout :: header"></header>
+<header th:replace="~{layout :: header}"></header>
 
 <main layout:fragment="content">
   <h1>Kết quả tìm kiếm</h1>
@@ -45,69 +44,45 @@
     </ul>
   </div>
 
-  <div th:if="${userPosts.size() > 0}">
-    <h2>Bài đăng</h2>
-    <table class="table">
-      <thead>
-      <tr>
-        <th>Created By</th>
-        <th>Image Profile</th>
-        <th>Content</th>
-        <th>Class</th>
-        <th>Subject</th>
-        <th>Created At</th>
-        <th>Updated At</th>
-        <th>Images</th>
-        <th>Likes</th>
-        <th>Comments</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="userPost : ${userPosts}">
-        <td th:text="${userPost.user.name}"></td>
-        <td>
-          <img th:if="${userPost.user.image != null}"
-               th:src="'data:image/jpeg;base64,' + ${userPost.user.getBase64Image()}"
-               class="avatar-image" alt="Avatar" />
-        </td>
-        <td th:text="${userPost.content}"></td>
-        <td th:text="${userPost.classEntity.name}"></td>
-        <td th:text="${userPost.subjectEntity.name}"></td>
-        <td th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-        <td th:text="${#dates.format(userPost.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-        <td class="post-images">
-          <div th:each="image : ${userPost.images}">
-            <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}"
-                 alt="Post Image" />
-          </div>
-        </td>
-        <td><span class="like-count" th:text="${userPost.likes}"></span></td>
-        <td th:text="${userPost.commentCount}"></td>
-        <td>
-          <button type="button" class="like-btn" th:data-post-id="${userPost.id}"
-                  th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
-          </button>
-          <a th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
-          <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post">
-            <input type="text" name="reason" placeholder="Reason for reporting" required>
-            <button type="submit">Report Post</button>
-          </form>
-          <form th:if="${#lists.contains(followedPosts, userPost)}"
-                th:action="@{/user-posts/{id}/unfollow(id=${userPost.id})}" method="post">
-            <button type="submit">Unfollow</button>
-          </form>
-          <form th:unless="${#lists.contains(followedPosts, userPost)}"
-                th:action="@{/user-posts/{id}/follow(id=${userPost.id})}" method="post">
-            <button type="submit">Follow</button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+  <!-- User posts list -->
+  <div th:if="${not #lists.isEmpty(userPosts)}">
+    <h2>Recent User Posts</h2>
+    <div th:each="userPost : ${userPosts}" class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title" th:text="${userPost.user.name}"></h5>
+        <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
+        <p class="card-text" th:text="${userPost.content}"></p>
+        <p>Class: <span th:text="${userPost.classEntity.name}"></span></p>
+        <p>Subject: <span th:text="${userPost.subjectEntity.name}"></span></p>
+        <div class="post-images">
+          <img th:each="image : ${userPost.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+        </div>
+        <span class="like-count" th:text="${userPost.likes}"></span>
+        <p>Comments: <span th:text="${userPost.commentCount}"></span></p>
+        <button type="button" class="btn btn-primary like-btn" th:data-post-id="${userPost.id}"
+                th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
+        </button>
+        <a th:href="@{/user-posts/{id}(id=${userPost.id})}" class="btn btn-secondary">Comments</a>
+        <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post" class="d-inline">
+          <input type="text" name="reason" placeholder="Reason for reporting" required>
+          <button type="submit" class="btn btn-warning">Report Post</button>
+        </form>
+        <form th:if="${#lists.contains(followedPosts, userPost)}"
+              th:action="@{/user-posts/{id}/unfollow(id=${userPost.id})}" method="post" class="d-inline">
+          <button type="submit" class="btn btn-info">Unfollow</button>
+        </form>
+        <form th:unless="${#lists.contains(followedPosts, userPost)}"
+              th:action="@{/user-posts/{id}/follow(id=${userPost.id})}" method="post" class="d-inline">
+          <button type="submit" class="btn btn-info">Follow</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div th:if="${#lists.isEmpty(userPosts)}">
+    <p>No posts found.</p>
   </div>
 </main>
 
-<footer th:replace="layout :: footer"></footer>
+<footer th:replace="~{layout :: footer}"></footer>
 </body>
 </html>

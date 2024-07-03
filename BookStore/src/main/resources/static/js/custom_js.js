@@ -4,14 +4,13 @@ $(document).ready(function() {
         event.preventDefault();
         var button = $(this);
         var postId = button.data('post-id');
-        var row = button.closest('tr');
-        var likeCountElement = row.find('.like-count');
+        var likeCountElement = button.closest('.card-body').find('.like-count'); // Tìm đến phần tử span trong .card-body của bài đăng được like
 
         $.ajax({
             url: '/user-posts/' + postId + '/like',
             type: 'POST',
             success: function(data) {
-                // Cập nhật UI với số lượt thích mới
+                // Cập nhật UI với số lượt thích mới của bài đăng cụ thể
                 likeCountElement.text(data);
             },
             error: function(xhr, status, error) {
@@ -21,6 +20,9 @@ $(document).ready(function() {
         });
     });
 });
+
+
+
 /* nút update profile */
 $(document).ready(function() {
     $("#updateButton").click(function() {
@@ -111,4 +113,59 @@ $(document).ready(function() {
         $('.delete-btn').hide();
         $('.unfollow-btn').hide();
     }
+});
+/* xét trong add  */
+$(document).ready(function() {
+    $('#createPostForm').submit(function(event) {
+        event.preventDefault();
+
+        // Clear previous messages
+        $('#successMessage').hide().text('');
+        $('#message').hide().text('');
+        $('#contentError').text('');
+        $('#classEntityError').text('');
+        $('#subjectEntityError').text('');
+        $('#imagesError').text('');
+
+        var form = $('#createPostForm')[0];
+        var formData = new FormData(form);
+
+        $.ajax({
+            type: 'POST',
+            enctype: 'multipart/form-data',
+            url: '/user-posts/new',
+            data: formData,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000,
+
+            success: function(data) {
+                if (data.status === 'success') {
+                    $('#successMessage').text(data.message).fadeIn().delay(3000).fadeOut();
+                    $('#createPostForm')[0].reset();
+                } else {
+                    // Handle errors if any (you can add this part if needed)
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status === 400) {
+                    var errors = xhr.responseJSON.errors;
+                    $('#contentError').text(errors.content || "");
+                    $('#classEntityError').text(errors.classEntity || "");
+                    $('#subjectEntityError').text(errors.subjectEntity || "");
+                    $('#imagesError').text(errors.images || "");
+                } else {
+                    $('#message').text('Đã xảy ra lỗi trong quá trình tạo bài đăng.').addClass('alert-danger').fadeIn().delay(3000).fadeOut();
+                }
+            }
+        });
+    });
+});
+
+/* đóng mở form đăng bài */
+$(document).ready(function() {
+    $('#textInput').on('click', function() {
+        $('#postCreationForm').toggle();
+    });
 });

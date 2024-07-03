@@ -2,135 +2,165 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
 <head>
   <meta charset="UTF-8">
-  <title>HomePage</title>
-  <style>
-    .post-images img {
-      max-width: 100px;
-      max-height: 100px;
-      margin-right: 10px;
-    }
-    .dropdown-orange {
-      background-color: orange;
-      color: white;
-    }
-  </style>
+  <title>User Posts</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+  <th:block th:replace="~{layout :: link-css}"></th:block>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/js/custom_js.js"></script>
-  <!-- Replace link CSS from layout -->
-  <th:block th:replace="~{layout :: link-css}"></th:block>
 </head>
 <body layout:decorate="~{layout}">
-<!-- Replace header from layout -->
 <th:block th:replace="~{layout :: header}"></th:block>
-<main layout:fragment="content">
-  <div class="row">
-    <div class="col-md-10">
-      <div class="container mt-4">
-        <div class="row">
-          <div class="col">
-            <div class="custom-select-container">
-              <form class="form-inline mb-3" th:action="@{/user-posts}" method="get">
-                <select class="custom-select mr-sm-2 dropdown-orange" id="selectedClass" name="selectedClass">
-                  <option value="">Chọn khối</option>
-                  <option th:each="classEntity : ${classEntities}"
-                          th:value="${classEntity.id}"
-                          th:text="${classEntity.name}"
-                          th:selected="${classEntity.id == selectedClassId}"></option>
-                </select>
-                <select class="custom-select mr-sm-2 dropdown-orange" id="selectedSubject" name="selectedSubject">
-                  <option value="">Chọn môn học</option>
-                  <option th:each="subjectEntity : ${subjectEntities}"
-                          th:value="${subjectEntity.id}"
-                          th:text="${subjectEntity.name}"
-                          th:selected="${subjectEntity.id == selectedSubjectId}"></option>
-                </select>
-                <button type="submit" class="btn btn-primary">Lọc</button>
-              </form>
 
-              <div class="d-flex align-items-center mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16" style="color: orange; padding: 10px;">
-                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
-                  <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
-                </svg>
-                <form id="textForm" class="form-inline ml-2">
-                  <input type="text" id="textInput" placeholder="Nhập văn bản vào đây..." class="large-input">
-                </form>
-              </div>
-              <div class="button-container">
-                <a th:href="@{/user-posts/new}">Create New User Post</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-2">
-    </div>
+<main layout:fragment="content" class="container mt-4">
+
+
+  <h1>User Posts</h1>
+  <!-- Filter form -->
+  <form id="filterForm" class="form-inline mb-3" th:action="@{/user-posts}" method="get">
+    <select class="custom-select mr-sm-2 dropdown-orange" id="selectedClass" name="selectedClass">
+      <option value="">Chọn khối</option>
+      <option th:each="classEntity : ${classEntities}"
+              th:value="${classEntity.id}"
+              th:text="${classEntity.name}"
+              th:selected="${classEntity.id == selectedClassId}"></option>
+    </select>
+    <select class="custom-select mr-sm-2 dropdown-orange" id="selectedSubject" name="selectedSubject">
+      <option value="">Chọn môn học</option>
+      <option th:each="subjectEntity : ${subjectEntities}"
+              th:value="${subjectEntity.id}"
+              th:text="${subjectEntity.name}"
+              th:selected="${subjectEntity.id == selectedSubjectId}"></option>
+    </select>
+    <button type="submit" class="btn btn-primary">Lọc</button>
+  </form>
+
+  <!-- Create new post button -->
+  <div class="d-flex align-items-center mb-3">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16" style="color: orange; padding: 10px;">
+      <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+      <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+    </svg>
+    <input type="text" id="textInput" placeholder="Nhập văn bản vào đây..." class="form-control ml-2" readonly>
   </div>
 
-  <h2>Recent User Posts</h2>
-  <table class="table">
-    <thead>
-    <tr>
-      <th>Created By</th>
-      <th>image profile</th>
-      <th>Content</th>
-      <th>Class</th>
-      <th>Subject</th>
-      <th>Created At</th>
-      <th>Updated At</th>
-      <th>Images</th>
-      <th>Likes</th>
-      <th>Comments</th>
-      <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="userPost : ${userPosts}">
-      <td th:text="${userPost.user.name}"></td>
-      <td>
-        <img th:if="${userPost.user.image != null}"
-             th:src="'data:image/jpeg;base64,' + ${userPost.user.getBase64Image()}"
-             width="50" height="50" />
-      </td>
-      <td th:text="${userPost.content}"></td>
-      <td th:text="${userPost.classEntity.name}"></td>
-      <td th:text="${userPost.subjectEntity.name}"></td>
-      <td th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-      <td th:text="${#dates.format(userPost.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-      <td class="post-images">
-        <div th:each="image : ${userPost.images}">
-          <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+  <div id="postCreationForm">
+    <form id="createPostForm" th:action="@{/user-posts/new}" th:object="${user_Post}" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="content">Content:</label>
+        <textarea id="content" th:field="*{content}" class="form-control"></textarea>
+        <span id="contentError" class="text-danger"></span>
+      </div>
+      <div class="form-group">
+        <label for="classEntity">Class:</label>
+        <select id="classEntity" th:field="*{classEntity}" class="form-control">
+          <option value="">Select a class</option>
+          <option th:each="classEntity : ${classEntities}" th:value="${classEntity.id}" th:text="${classEntity.name}"></option>
+        </select>
+        <span id="classEntityError" class="text-danger"></span>
+      </div>
+      <div class="form-group">
+        <label for="subjectEntity">Subject:</label>
+        <select id="subjectEntity" th:field="*{subjectEntity}" class="form-control">
+          <option value="">Select a subject</option>
+          <option th:each="subjectEntity : ${subjectEntities}" th:value="${subjectEntity.id}" th:text="${subjectEntity.name}"></option>
+        </select>
+        <span id="subjectEntityError" class="text-danger"></span>
+      </div>
+      <div class="form-group">
+        <label for="images">Images:</label>
+        <input type="file" id="images" name="images" multiple class="form-control-file">
+        <span id="imagesError" class="text-danger"></span>
+      </div>
+      <button type="submit" class="btn btn-primary">Create User Post</button>
+    </form>
+  </div>
+
+  <div id="successMessage" class="alert alert-success" style="display: none;"></div>
+  <div id="message" class="alert" role="alert" style="display: none;"></div>
+
+
+  <!-- User posts list -->
+  <div th:if="${not #lists.isEmpty(userPosts)}">
+    <h2>Recent User Posts</h2>
+    <div th:each="userPost : ${userPosts}" class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title" th:text="${userPost.user.name}"></h5>
+        <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
+        <p class="card-text" th:text="${userPost.content}"></p>
+        <p>Class: <span th:text="${userPost.classEntity.name}"></span></p>
+        <p>Subject: <span th:text="${userPost.subjectEntity.name}"></span></p>
+        <div class="post-images">
+          <img th:each="image : ${userPost.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
         </div>
-      </td>
-      <td><span class="like-count" th:text="${userPost.likes}"></span></td>
-      <td th:text="${userPost.commentCount}"></td>
-      <td>
-        <button type="button" class="like-btn" th:data-post-id="${userPost.id}"
+        <span class="like-count" th:text="${userPost.likes}"></span>
+        <p>Comments: <span th:text="${userPost.commentCount}"></span></p>
+        <button type="button" class="btn btn-primary like-btn" th:data-post-id="${userPost.id}"
                 th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
         </button>
-        <a th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
-        <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post">
+        <a th:href="@{/user-posts/{id}(id=${userPost.id})}" class="btn btn-secondary">Comments</a>
+        <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post" class="d-inline">
           <input type="text" name="reason" placeholder="Reason for reporting" required>
-          <button type="submit">Report Post</button>
+          <button type="submit" class="btn btn-warning">Report Post</button>
         </form>
         <form th:if="${#lists.contains(followedPosts, userPost)}"
-              th:action="@{/user-posts/{id}/unfollow(id=${userPost.id})}" method="post">
-          <button type="submit">Unfollow</button>
+              th:action="@{/user-posts/{id}/unfollow(id=${userPost.id})}" method="post" class="d-inline">
+          <button type="submit" class="btn btn-info">Unfollow</button>
         </form>
         <form th:unless="${#lists.contains(followedPosts, userPost)}"
-              th:action="@{/user-posts/{id}/follow(id=${userPost.id})}" method="post">
-          <button type="submit">Follow</button>
+              th:action="@{/user-posts/{id}/follow(id=${userPost.id})}" method="post" class="d-inline">
+          <button type="submit" class="btn btn-info">Follow</button>
         </form>
-      </td>
-
-    </tr>
-    </tbody>
-  </table>
+      </div>
+    </div>
+  </div>
+  <div th:if="${#lists.isEmpty(userPosts)}">
+    <p>No posts found.</p>
+  </div>
 </main>
 
-<!-- Replace footer from layout -->
 <th:block th:replace="~{layout :: footer}"></th:block>
+
+<script>
+  $(document).ready(function() {
+    $('#submitBtn').click(function(event) {
+      event.preventDefault(); // Ngăn chặn hành động mặc định của button
+
+      // Lấy dữ liệu từ form
+      var form = $('#createPostForm')[0];
+      var formData = new FormData(form);
+
+      // Gửi AJAX request
+      $.ajax({
+        type: 'POST',
+        enctype: 'multipart/form-data',
+        url: '/user-posts/new',
+        data: formData,
+        processData: false, // Không xử lý dữ liệu
+        contentType: false, // Không đặt lại kiểu dữ liệu
+        cache: false, // Không cache kết quả request
+        timeout: 600000, // Timeout sau 600 giây
+
+        success: function(data) {
+          // Xử lý thành công, hiển thị thông báo
+          $('#message').text(data);
+          $('#message').addClass('text-success');
+          $('#message').removeClass('text-danger');
+          $('#message').fadeIn().delay(3000).fadeOut();
+          $('#createPostForm')[0].reset(); // Xóa form sau khi gửi thành công
+        },
+        error: function(xhr, status, error) {
+          // Xử lý lỗi, hiển thị thông báo lỗi
+          var errorMessage = xhr.responseJSON.message ? xhr.responseJSON.message : 'Đã xảy ra lỗi trong quá trình tạo bài đăng.';
+          $('#message').text(errorMessage);
+          $('#message').addClass('text-danger');
+          $('#message').removeClass('text-success');
+          $('#message').fadeIn().delay(3000).fadeOut();
+        }
+      });
+    });
+  });
+</script>
 
 </body>
 </html>

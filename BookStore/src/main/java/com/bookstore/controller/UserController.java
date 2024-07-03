@@ -77,7 +77,7 @@ public class UserController {
             isOwnProfile = true; // Because it's the logged-in user accessing their own profile
         }
 
-        // Convert image to Base64
+        // Convert image to Base64 for current user's avatar
         String imageBase64 = null;
         if (user.getImage() != null) {
             imageBase64 = Base64.getEncoder().encodeToString(user.getImage());
@@ -92,6 +92,7 @@ public class UserController {
         // Get friend requests
         List<Friend> friends = friendRequestService.getFriends(user);
 
+        // Add current user's profile information to the model
         model.addAttribute("user", user);
         model.addAttribute("imageBase64", imageBase64);
         model.addAttribute("userPosts", userPosts);
@@ -104,6 +105,8 @@ public class UserController {
 
         return "user/profile";
     }
+
+
 
     @PostMapping("/profile")
     public String updateProfile(@ModelAttribute("profileDTO") ProfileDTO profileDTO, @AuthenticationPrincipal UserDetails userDetails) throws IOException {

@@ -60,104 +60,82 @@
 
   <!-- Friends List -->
   <h2>Friends</h2>
-  <ul class="list-group">
+  <ul class="list-group friends-list">
     <li th:each="friend : ${friends}" class="list-group-item d-flex justify-content-between align-items-center">
+      <img th:if="${friend.friend.image != null}"
+           th:src="'data:image/jpeg;base64,' + ${friend.friend.getBase64Image()}"
+           class="avatar-image friends-list img" alt="Avatar" width="50" height="50"/>
       <span th:text="${friend.friend.name}"></span>
       <button type="button" class="btn btn-danger btn-sm unfriend-btn" th:data-id="${friend.friend.id}">Unfriend</button>
     </li>
   </ul>
+
+
+
   <!-- User's Posts -->
-  <h2>Your Posts</h2>
-  <table class="table">
-    <thead>
-    <tr>
-      <th>Content</th>
-      <th>Class</th>
-      <th>Subject</th>
-      <th>Created At</th>
-      <th>Updated At</th>
-      <th>Images</th>
-      <th>Likes</th>
-      <th>Comments</th>
-      <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="userPost : ${userPosts}">
-      <td th:text="${userPost.content}"></td>
-      <td th:text="${userPost.classEntity.name}"></td>
-      <td th:text="${userPost.subjectEntity.name}"></td>
-      <td th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-      <td th:text="${#dates.format(userPost.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-      <td class="post-images">
-        <div th:each="image : ${userPost.images}">
-          <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+  <div th:if="${not #lists.isEmpty(userPosts)}">
+    <h2>Your Posts</h2>
+    <div class="card-columns">
+      <div th:each="userPost : ${userPosts}" class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title" th:text="${userPost.user.name}"></h5>
+          <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
+          <p class="card-text" th:text="${userPost.content}"></p>
+          <p>Class: <span th:text="${userPost.classEntity.name}"></span></p>
+          <p>Subject: <span th:text="${userPost.subjectEntity.name}"></span></p>
+          <div class="post-images">
+            <img th:each="image : ${userPost.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+          </div>
+          <span class="like-count" th:text="${userPost.likes}"></span>
+          <p>Comments: <span th:text="${userPost.commentCount}"></span></p>
+          <div class="btn-group" role="group" aria-label="Post Actions">
+            <a class="btn btn-primary edit-btn" th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
+            <a class="btn btn-danger delete-btn" th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
+            <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
+          </div>
         </div>
-      </td>
-      <td th:text="${userPost.likes}"></td>
-      <td th:text="${userPost.commentCount}"></td>
-      <td>
-        <a class="edit-btn" th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
-        <a class="delete-btn" th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
-        <a th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+      </div>
+    </div>
+  </div>
+  <div th:if="${#lists.isEmpty(userPosts)}">
+    <p>No posts found.</p>
+  </div>
 
   <!-- Followed Posts -->
-  <h2>Followed Posts</h2>
-  <table class="table">
-    <thead>
-    <tr>
-      <th>Created By</th>
-      <th>Image Profile</th>
-      <th>Content</th>
-      <th>Class</th>
-      <th>Subject</th>
-      <th>Created At</th>
-      <th>Updated At</th>
-      <th>Images</th>
-      <th>Likes</th>
-      <th>Comments</th>
-      <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="post : ${followedPosts}">
-      <td th:text="${post.user.name}"></td>
-      <td>
-        <img th:if="${post.user.image != null}"
-             th:src="'data:image/jpeg;base64,' + ${post.user.getBase64Image()}"
-             width="50" height="50" />
-      </td>
-      <td th:text="${post.content}"></td>
-      <td th:text="${post.classEntity.name}"></td>
-      <td th:text="${post.subjectEntity.name}"></td>
-      <td th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-      <td th:text="${#dates.format(post.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-      <td class="post-images">
-        <div th:each="image : ${post.images}">
-          <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+  <div th:if="${not #lists.isEmpty(followedPosts)}">
+    <h2>Followed Posts</h2>
+    <div class="card-columns">
+      <div th:each="post : ${followedPosts}" class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title" th:text="${post.user.name}"></h5>
+          <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
+          <p class="card-text" th:text="${post.content}"></p>
+          <p>Class: <span th:text="${post.classEntity.name}"></span></p>
+          <p>Subject: <span th:text="${post.subjectEntity.name}"></span></p>
+          <div class="post-images">
+            <img th:each="image : ${post.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+          </div>
+          <span class="like-count" th:text="${post.likes}"></span>
+          <p>Comments: <span th:text="${post.commentCount}"></span></p>
+          <div class="btn-group" role="group" aria-label="Post Actions">
+            <button type="button" class="btn btn-primary like-btn" th:data-post-id="${post.id}"
+                    th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
+            </button>
+            <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
+            <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}" method="post" class="d-inline">
+              <button type="submit" class="btn btn-info">Unfollow</button>
+            </form>
+          </div>
         </div>
-      </td>
-      <td><span class="like-count" th:text="${post.likes}"></span></td>
-      <td th:text="${post.commentCount}"></td>
-      <td>
-        <button type="button" class="like-btn" th:data-post-id="${post.id}"
-                th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
-        </button>
-        <a th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
-        <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}" method="post">
-          <button type="submit" class="unfollow-btn">Unfollow</button>
-        </form>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+      </div>
+    </div>
+  </div>
+  <div th:if="${#lists.isEmpty(followedPosts)}">
+    <p>No posts found.</p>
+  </div>
 </main>
 
-<!-- Replace footer from layout -->
+  <!-- Replace footer from layout -->
 <th:block th:replace="~{layout :: footer}"></th:block>
 </body>
 </html>

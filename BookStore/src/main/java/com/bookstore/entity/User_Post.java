@@ -1,6 +1,9 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import java.util.Date;
 import java.util.List;
@@ -13,13 +16,14 @@ public class User_Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Nội dung không được để trống")
     @Column(name = "content")
     private String content;
-
+    @NotNull(message = "Vui lòng chọn một lớp học")
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = false)
     private ClassEntity classEntity;
-
+    @NotNull(message = "Vui lòng chọn một môn học")
     @ManyToOne
     @JoinColumn(name = "subject_id", nullable = false)
     private SubjectEntity subjectEntity;
@@ -32,6 +36,7 @@ public class User_Post {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
+    @Size(max = 10, message = "Số lượng hình ảnh không được vượt quá 10")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_post_id")
     private List<Image> images;

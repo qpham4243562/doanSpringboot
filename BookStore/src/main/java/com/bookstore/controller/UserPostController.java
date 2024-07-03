@@ -4,12 +4,14 @@ import com.bookstore.entity.*;
 import com.bookstore.repository.IUserRepository;
 import com.bookstore.repository.UserPostLikeRepository;
 import com.bookstore.services.*;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -17,7 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -92,25 +96,35 @@ public class UserPostController {
         model.addAttribute("selectedSubjectId", selectedSubjectId);
         model.addAttribute("followedPosts", followedPosts);
         model.addAttribute("currentUser", currentUser);
+        model.addAttribute("user_Post", new User_Post());
+
 
         return "user-post/list";
     }
 
-
-
-
-    @GetMapping("/new")
-    public String showCreateForm(Model model) {
-        model.addAttribute("userPost", new User_Post());
-        model.addAttribute("classEntities", classService.getAllClasses());
-        model.addAttribute("subjectEntities", subjectService.getAllSubjects());
-        return "user-post/add";
-    }
-
     @PostMapping("/new")
-    public String createUserPost(@ModelAttribute User_Post userPost,
-                                 @RequestParam("images") List<MultipartFile> images,
-                                 Principal principal) {
+    public ResponseEntity<Map<String, Object>> createUserPost(
+            @Valid @ModelAttribute("user_Post") User_Post user_Post,
+            BindingResult bindingResult,
+            @RequestParam("images") List<MultipartFile> images,
+            Principal principal, Model model) {
+
+        if (bindingResult.hasErrors() || images.size() > 10) {
+            Map<String, String> errors = new HashMap<>();
+            if (images.size() > 10) {
+                errors.put("images", "Số lượng hình ảnh không được vượt quá 10");
+            } else {
+                bindingResult.getFieldErrors().forEach(error -> {
+                    errors.put(error.getField(), error.getDefaultMessage());
+                });
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "error");
+            response.put("errors", errors);
+            return ResponseEntity.badRequest().body(response);
+        }
+
         List<Image> imageList = new ArrayList<>();
         for (MultipartFile file : images) {
             Image image = new Image();
@@ -124,11 +138,34 @@ public class UserPostController {
         }
         String username = principal.getName();
         User user = userService.findByUsername(username);
-        userPost.setUser(user);
-        userPost.setImages(imageList);
-        userPostService.createUserPost(userPost);
-        return "redirect:/user-posts";
+        user_Post.setUser(user);
+        user_Post.setImages(imageList);
+        userPostService.createUserPost(user_Post);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("status", "success", "message", "Bài đăng đã được tạo thành công!"));
     }
+
+    private void prepareModelForListView(Model model, Principal principal) {
+        model.addAttribute("classEntities", classService.getAllClasses());
+        model.addAttribute("subjectEntities", subjectService.getAllSubjects());
+        User currentUser = userService.findByUsername(principal.getName());
+        model.addAttribute("currentUser", currentUser);
+        List<User_Post> userPosts = userPostService.getAllApprovedUserPosts();
+        userPosts = userPosts.stream().filter(User_Post::isApproved).collect(Collectors.toList());
+
+        for (User_Post userPost : userPosts) {
+            userPost.setCommentCount(commentService.countCommentsByUserPostId(userPost.getId()));
+        }
+
+        userPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
+
+        model.addAttribute("userPosts", userPosts);
+        model.addAttribute("selectedClassId", null);
+        model.addAttribute("selectedSubjectId", null);
+    }
+
+
+
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
@@ -179,7 +216,7 @@ public class UserPostController {
     }
 
     @PostMapping("/{id}/like")
-    public ResponseEntity<?> likeUserPost(@PathVariable Long id, Principal principal) {
+    public ResponseEntity<Integer> likeUserPost(@PathVariable Long id, Principal principal) {
         User_Post userPost = userPostService.getUserPostById(id);
         User user = userRepository.findByUsername(principal.getName());
 
@@ -199,9 +236,11 @@ public class UserPostController {
 
         userPostService.updateUserPost(userPost);
 
-        // Return JSON response with updated like count
+        // Return số lượt thích hiện tại
         return ResponseEntity.ok(userPost.getLikes());
     }
+
+
 
 
 

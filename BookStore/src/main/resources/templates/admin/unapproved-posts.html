@@ -38,8 +38,11 @@
         </div>
       </td>
       <td>
-        <form th:action="@{/admin/{id}/approve(id=${post.id})}" method="post">
+        <form th:action="@{/admin/{id}/approve(id=${post.id})}" method="post" style="display: inline-block;">
           <button type="submit">Approve</button>
+        </form>
+        <form th:action="@{/admin/{id}/delete(id=${post.id})}" method="post" style="display: inline-block;">
+          <button type="submit">Delete</button>
         </form>
       </td>
     </tr>

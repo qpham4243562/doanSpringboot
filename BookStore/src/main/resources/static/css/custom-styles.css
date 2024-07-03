@@ -73,3 +73,24 @@
     left: -120px; /* Change this value to move the menu left */
     margin-top: var(--bs-dropdown-spacer);
 }
+.post-images img {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 10px;
+}
+.dropdown-orange {
+    background-color: orange;
+    color: white;
+}
+#postCreationForm {
+    display: none;
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
