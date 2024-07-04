@@ -2,11 +2,12 @@ package com.bookstore.services;
 
 import com.bookstore.entity.Comment;
 import com.bookstore.entity.User;
+import com.bookstore.repository.CommentLikeRepository;
 import com.bookstore.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -14,6 +15,9 @@ public class CommentService {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private CommentLikeRepository commentLikeRepository;
 
     public List<Comment> getCommentsByUserPostId(Long userPostId) {
         return commentRepository.findByUserPostId(userPostId);
@@ -23,9 +27,13 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
+    @Transactional
     public void deleteComment(Long commentId, User user) {
-        Comment comment = commentRepository.findById(commentId).orElse(null);
-        if (comment != null && comment.getUser().getId().equals(user.getId())) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        if (comment.getUser().getId().equals(user.getId())) {
+            commentLikeRepository.deleteByCommentId(commentId);
             commentRepository.delete(comment);
         } else {
             throw new RuntimeException("You are not authorized to delete this comment.");
@@ -34,5 +42,10 @@ public class CommentService {
 
     public int countCommentsByUserPostId(Long postId) {
         return commentRepository.countByUserPostId(postId);
+    }
+
+    public Comment getCommentById(Long id) {
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
     }
 }

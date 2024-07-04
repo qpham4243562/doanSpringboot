@@ -4,6 +4,7 @@ import com.bookstore.entity.*;
 import com.bookstore.repository.IUserRepository;
 import com.bookstore.repository.UserPostLikeRepository;
 import com.bookstore.services.*;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +50,9 @@ public class UserPostController {
     private NotificationService notificationService;
     @Autowired
     private PostReportService postReportService;
+    @Autowired
+    private CommentLikeService commentLikeService;
+
 
 
     @ModelAttribute
@@ -248,12 +252,27 @@ public class UserPostController {
     public String getUserPost(@PathVariable Long postId, Model model, Principal principal) {
         User_Post userPost = userPostService.getUserPostById(postId);
         User currentUser = userRepository.findByUsername(principal.getName());
+        List<Comment> comments = commentService.getCommentsByUserPostId(postId);
+
+        // Calculate the like count for each comment
+        Map<Long, Integer> commentLikeCounts = new HashMap<>();
+        for (Comment comment : comments) {
+            int likeCount = commentLikeService.getLikeCount(comment.getId());
+            commentLikeCounts.put(comment.getId(), likeCount);
+        }
+
+        // Sort comments by like count in descending order
+        comments.sort((c1, c2) -> commentLikeCounts.get(c2.getId()) - commentLikeCounts.get(c1.getId()));
 
         model.addAttribute("userPost", userPost);
-        model.addAttribute("comments", commentService.getCommentsByUserPostId(postId));
+        model.addAttribute("comments", comments);
+        model.addAttribute("commentLikeCounts", commentLikeCounts);
         model.addAttribute("currentUser", currentUser);
+        model.addAttribute("commentLikeService", commentLikeService);
         return "user-post/detail";
     }
+
+
 
 
     @PostMapping("/{postId}/comments")
@@ -271,10 +290,28 @@ public class UserPostController {
     }
 
     @PostMapping("/comments/{commentId}/delete")
+    @Transactional
     public String deleteComment(@PathVariable Long commentId, @RequestParam("postId") Long postId, Principal principal) {
         User user = userRepository.findByUsername(principal.getName());
         commentService.deleteComment(commentId, user);
         return "redirect:/user-posts/" + postId;
+    }
+    @PostMapping("/comments/{commentId}/like")
+    @Transactional
+    public String likeComment(@PathVariable Long commentId, Principal principal) {
+        User user = userRepository.findByUsername(principal.getName());
+        Comment comment = commentService.getCommentById(commentId);
+        commentLikeService.likeComment(user, comment);
+        return "redirect:/user-posts/" + comment.getUserPost().getId();
+    }
+
+    @PostMapping("/comments/{commentId}/unlike")
+    @Transactional
+    public String unlikeComment(@PathVariable Long commentId, Principal principal) {
+        User user = userRepository.findByUsername(principal.getName());
+        Comment comment = commentService.getCommentById(commentId);
+        commentLikeService.unlikeComment(user, comment);
+        return "redirect:/user-posts/" + comment.getUserPost().getId();
     }
     @GetMapping("/notifications")
     public String getNotifications(Model model, Principal principal) {

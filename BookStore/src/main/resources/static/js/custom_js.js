@@ -169,3 +169,29 @@ $(document).ready(function() {
         $('#postCreationForm').toggle();
     });
 });
+/* nút like của comment */
+$(document).ready(function() {
+    $('.like-button').click(function(e) {
+        e.preventDefault();
+        var button = $(this);
+        var commentId = button.data('comment-id');
+        var postId = button.data('post-id');
+        var isLiked = button.data('liked');
+        var likeCountSpan = button.siblings('p').find('.like-count');
+        var currentLikes = parseInt(likeCountSpan.text());
+        var url = isLiked ? '/user-posts/comments/' + commentId + '/unlike' : '/user-posts/comments/' + commentId + '/like';
+
+        $.post(url, function(response) {
+            // Update like count and button state
+            if (isLiked) {
+                likeCountSpan.text(currentLikes - 1);
+                button.data('liked', false);
+            } else {
+                likeCountSpan.text(currentLikes + 1);
+                button.data('liked', true);
+            }
+        }).fail(function() {
+            alert("An error occurred while updating the like status.");
+        });
+    });
+});

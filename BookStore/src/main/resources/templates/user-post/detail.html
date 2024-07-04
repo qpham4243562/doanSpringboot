@@ -11,6 +11,8 @@
     }
   </style>
   <th:block th:replace="~{layout :: link-css}"></th:block>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/js/custom_js.js"></script>
 </head>
 <body layout:decorate="~{layout}">
 <th:block th:replace="~{layout :: header}"></th:block>
@@ -48,16 +50,32 @@
       <button type="submit">Post Comment</button>
     </form>
 
-    <div th:each="comment : ${comments}">
+    <div th:each="comment : ${comments}" id="comment-[[${comment.id}]]">
       <div>
         <p th:text="${comment.content}">Comment Content</p>
         <p>Posted by: <span th:text="${comment.user.username}">Username</span></p>
+        <p>Likes: <span class="like-count" th:text="${commentLikeCounts[comment.id]}">0</span></p>
 
-        <!-- Conditional delete button -->
-        <form th:if="${comment.user.id == currentUser.id}" th:action="@{/user-posts/comments/{commentId}/delete(commentId=${comment.id})}" method="post">
+        <button class="like-button"
+                th:data-comment-id="${comment.id}"
+                th:data-post-id="${userPost.id}"
+                th:data-liked="${commentLikeService.isLikedByUser(comment.id, currentUser.id)}">
+          Like
+        </button>
+
+        <!-- Delete button only for comment owner -->
+        <form th:if="${comment.user.id == currentUser.id}"
+              th:action="@{/user-posts/comments/{commentId}/delete(commentId=${comment.id})}" method="post">
           <input type="hidden" name="postId" th:value="${userPost.id}" />
-          <button type="submit">Delete</button>
+          <button class="delete-comment-btn"
+                  data-comment-id="${comment.id}"
+                  data-post-id="${userPost.id}">Delete</button>
         </form>
+
+
+
+
+
       </div>
     </div>
   </div>

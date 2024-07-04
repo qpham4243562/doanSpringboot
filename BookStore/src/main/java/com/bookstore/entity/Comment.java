@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -31,4 +33,8 @@ public class Comment {
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private Set<CommentLike> likes = new HashSet<>();
+
 }
