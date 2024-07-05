@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>User Posts</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <th:block th:replace="~{layout :: link-css}"></th:block>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/js/custom_js.js"></script>
@@ -14,8 +14,6 @@
 
 <main layout:fragment="content" class="container mt-4">
 
-
-  <h1>User Posts</h1>
   <!-- Filter form -->
   <form id="filterForm" class="form-inline mb-3" th:action="@{/user-posts}" method="get">
     <select class="custom-select mr-sm-2 " id="selectedClass" name="selectedClass">
@@ -98,7 +96,7 @@
         <button type="button" class="btn btn-primary like-btn" th:data-post-id="${userPost.id}"
                 th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
         </button>
-        <a th:href="@{/user-posts/{id}(id=${userPost.id})}" class="btn btn-secondary">Comments</a>
+        <a th:href="@{/user-posts/{id}(id=${userPost.id})}" class="btn btn-secondary"><i class="fa-regular fa-message" style="color: #fc8717;"></i></a>
         <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post" class="d-inline">
           <input type="text" name="reason" placeholder="Reason for reporting" required>
           <button type="submit" class="btn btn-warning">Report Post</button>
@@ -114,6 +112,7 @@
       </div>
     </div>
   </div>
+
   <div th:if="${#lists.isEmpty(userPosts)}">
     <p>No posts found.</p>
   </div>
