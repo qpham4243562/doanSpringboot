@@ -18,7 +18,7 @@
   <h1>User Posts</h1>
   <!-- Filter form -->
   <form id="filterForm" class="form-inline mb-3" th:action="@{/user-posts}" method="get">
-    <select class="custom-select mr-sm-2 dropdown-orange" id="selectedClass" name="selectedClass">
+    <select class="custom-select mr-sm-2 " id="selectedClass" name="selectedClass">
       <option value="">Chọn khối</option>
       <option th:each="classEntity : ${classEntities}"
               th:value="${classEntity.id}"
@@ -72,7 +72,7 @@
         <input type="file" id="images" name="images" multiple class="form-control-file">
         <span id="imagesError" class="text-danger"></span>
       </div>
-      <button type="submit" class="btn btn-primary">Create User Post</button>
+      <button type="submit" class="btn btn-primary">Create</button>
     </form>
   </div>
 

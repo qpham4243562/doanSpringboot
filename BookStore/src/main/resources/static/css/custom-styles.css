@@ -7,7 +7,7 @@
 .navbar-custom .navbar-nav .nav-link,
 .navbar-custom .navbar-brand,
 .navbar-custom .btn,
-.navbar-custom .form-control,
+.navbar-custom,
 .navbar-custom .bi {
     color: white !important;
 }
@@ -17,7 +17,6 @@
 .navbar-custom .btn:hover,
 .navbar-custom .form-control:hover,
 .navbar-custom .bi:hover {
-    color: #f8f9fa !important;
     text-decoration: none;
 }
 

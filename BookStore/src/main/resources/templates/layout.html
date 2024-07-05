@@ -12,30 +12,37 @@
     </th:block>
     <style>
         .dropdown-menu {
-          left: -100px; /* Adjust this value to move the menu to the left */
-          background-color: transparent !important;
-          box-shadow: none;
+            left: -100px; /* Adjust this value to move the menu to the left */
+            background-color: transparent !important;
+            box-shadow: none;
         }
         .dropdown-menu .dropdown-item {
-          color: #000;
+            color: #000;
         }
         .dropdown-menu .dropdown-item:hover {
-          background-color: #f8f9fa;
+            background-color: #f8f9fa;
         }
         .nav-link.dropdown-toggle::after {
-          display: none; /* Hide the dropdown arrow */
+            display: none; /* Hide the dropdown arrow */
         }
         .search-input {
-          color: black;
-          background-color: rgba(0, 0, 0, 0.3);
-          padding: 0.375rem 0.75rem;
-          border-radius: 0.25rem;
+            color: black;
+
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px; /* Thay đổi giá trị này để điều chỉnh độ bo tròn */
+            border: 1px solid #ccc; /* Thêm đường viền để làm nổi bật khung */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm hiệu ứng đổ bóng */
+            transition: all 0.3s ease; /* Thêm hiệu ứng chuyển đổi mượt mà */
         }
 
         .search-input::placeholder {
-          color: #555;
+            color: #555;
         }
-
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff; /* Thay đổi màu viền khi focus */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Thêm hiệu ứng đổ bóng khi focus */
+        }
     </style>
 </head>
 <body>
@@ -54,18 +61,18 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-<!--                    <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">-->
-<!--                        <a class="nav-link" href="/admin/roles">Quản lý quyền</a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">-->
-<!--                        <a class="nav-link" href="/admin/unapproved">Duyệt bài đăng</a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">-->
-<!--                        <a class="nav-link" href="/admin/reports">Quản lý báo cáo</a>-->
-<!--                    </li>-->
+                    <!-- <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+                        <a class="nav-link" href="/admin/roles">Quản lý quyền</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+                        <a class="nav-link" href="/admin/unapproved">Duyệt bài đăng</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+                        <a class="nav-link" href="/admin/reports">Quản lý báo cáo</a>
+                    </li> -->
                 </ul>
-                <form class=" search-input" th:action="@{/user-posts/search}" method="get">
-                    <input type="text" name="query" placeholder="Nội dung tìm kiếm">
+                <form class="d-flex align-items-center" th:action="@{/user-posts/search}" method="get">
+                    <input type="text" class="form-control search-input me-2" name="query" placeholder="Nội dung tìm kiếm">
                 </form>
                 <form class="d-flex align-items-center">
                     <a href="/user-posts/notifications" class="position-relative mx-2">
@@ -73,12 +80,13 @@
                         <span th:if="${unreadNotificationCount > 0}"
                               th:text="${unreadNotificationCount}"
                               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              0
-              <span class="visually-hidden">unread notifications</span>
-            </span>
+                            0
+                            <span class="visually-hidden">unread notifications</span>
+                        </span>
                     </a>
                     <a href="/chat" class="position-relative mx-2">
-                        <i class="bi bi-chat-dots-fill mx-2"></i></a>
+                        <i class="bi bi-chat-dots-fill mx-2"></i>
+                    </a>
 
                     <div class="dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
