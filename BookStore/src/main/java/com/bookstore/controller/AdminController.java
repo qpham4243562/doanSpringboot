@@ -94,4 +94,9 @@ public class AdminController {
         postReportService.dismissReport(reportId);
         return "redirect:/admin/reports";
     }
+
+    @GetMapping("/sbadmin")
+    public String trangChuAdmin(Model m){
+        return "layoutAdmin";
+    }
 }
