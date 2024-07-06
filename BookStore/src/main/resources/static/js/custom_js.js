@@ -89,17 +89,25 @@ $(document).ready(function() {
 });
 /* nút hủy kết bạn */
 $(document).ready(function() {
-    $(".unfriend-btn").click(function(event) {
-        event.preventDefault();
-        let friendId = $(this).data("id");
-        $.post("/friend/unfriend", { friendId: friendId }, function(response) {
-            alert(response.message);
-            location.reload();
-        }).fail(function(response) {
-            alert(response.responseJSON.error);
-        });
+    $('.unfriend-btn').click(function() {
+        var friendId = $(this).data('id');
+        if (confirm('Are you sure you want to unfriend this person?')) {
+            $.ajax({
+                url: '/friend/unfriend',
+                type: 'POST',
+                data: { friendId: friendId },
+                success: function(response) {
+                    alert('Friend removed successfully');
+                    location.reload(); // Reload the page to reflect changes
+                },
+                error: function(xhr, status, error) {
+                    alert('An error occurred while unfriending: ' + error);
+                }
+            });
+        }
     });
 });
+
 /* ẩn nút nếu không đúng profile */
 $(document).ready(function() {
     // Check if the profile belongs to the logged-in user

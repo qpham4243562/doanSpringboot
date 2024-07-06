@@ -6,6 +6,7 @@ import com.bookstore.entity.User;
 import com.bookstore.entity.User_Post;
 import com.bookstore.repository.NotificationRepository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,21 +66,28 @@ public class NotificationService {
     public void createFriendRequestNotification(Friend friendRequest) {
         Notification notification = new Notification();
         notification.setUser(friendRequest.getFriend());
-        notification.setMessage("Người dùng " + friendRequest.getUser().getName() + " đã gửi cho bạn lời mời kết bạn.");
-        notification.setRead(false);
-        notification.setCreatedAt(new Date());
+        notification.setMessage(friendRequest.getUser().getUsername() + " sent you a friend request");
         notification.setType("FRIEND_REQUEST");
-        notification.setRelatedUserId(friendRequest.getId());
+        notification.setRelatedUserId(friendRequest.getUser().getId());
+        notification.setFriendRequestId(friendRequest.getId());
+        notification.setCreatedAt(new Date());
+        notification.setRead(false);
         notificationRepository.save(notification);
     }
-    public void createFriendAcceptedNotification(User fromUser, User toUser) {
-        Notification notification = new Notification();
-        notification.setUser(fromUser);
-        notification.setMessage(toUser.getName() + " đã chấp nhận lời mời kết bạn của bạn.");
-        notification.setRead(false);
-        notification.setCreatedAt(new Date());
-        notification.setType("FRIEND_ACCEPTED");
-        notification.setRelatedUserId(toUser.getId());
-        notificationRepository.save(notification);
+    public List<Notification> getAllNotifications(User user) {
+        return notificationRepository.findByUserOrderByCreatedAtDesc(user);
+    }
+
+    @Transactional
+    public void markAllNotificationsAsRead(User user) {
+        List<Notification> unreadNotifications = notificationRepository.findByUserAndIsReadFalseOrderByCreatedAtDesc(user);
+        for (Notification notification : unreadNotifications) {
+            notification.setRead(true);
+        }
+        notificationRepository.saveAll(unreadNotifications);
+    }
+    @Transactional
+    public void deleteNotificationByFriendRequest(Friend friendRequest) {
+        notificationRepository.deleteByTypeAndRelatedUserId("FRIEND_REQUEST", friendRequest.getUser().getId());
     }
 }
