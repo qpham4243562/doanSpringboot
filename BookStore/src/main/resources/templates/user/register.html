@@ -1,45 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="Viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký</title>
-    <link th:fragment="link-css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <style>
+        body {
+            background-color: #EEEEEE;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 500px; /* Increased width */
+            background-color: white;
+            padding: 3rem; /* Increased padding */
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Increased shadow */
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .text-center a {
+            display: block;
+            margin-top: 1rem;
+            text-decoration: none; /* Remove underline */
+            color: #007bff; /* Blue color for links */
+        }
+        .btn-google {
+            background-color: #db4a39;
+            color: white;
+        }
+        .btn-facebook {
+            background-color: #3b5998;
+            color: white;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-            <h3 class="card-title text-center">ĐĂNG KÝ</h3>
-            <form th:action="@{/register}" th:object="${user}" method="post">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Họ và tên:</label><span class="text-danger">*</span>
-                    <input type="text" class="form-control" th:field="*{name}" id="name">
-                    <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email:</label>
-                    <input type="email" class="form-control" th:field="*{email}" id="email">
-                    <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
-                </div>
-                <div class="mb-3">
-                    <label for="name" class="form-label">Tên đăng nhập:</label><span class="text-danger">*</span>
-                    <input type="text" class="form-control" th:field="*{username}" id="username">
-                    <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Mật khẩu:</label><span class="text-danger">*</span>
-                    <input type="password" class="form-control" th:field="*{password}" id="password">
-                    <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
-                </div>
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-info">Đăng ký</button>
-                </div>
-            </form>
+    <h3 class="text-center">ĐĂNG KÝ</h3>
+    <form th:action="@{/register}" th:object="${user}" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Họ và tên:</label><span class="text-danger">*</span>
+            <input type="text" class="form-control" th:field="*{name}" id="name">
+            <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
         </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" class="form-control" th:field="*{email}" id="email">
+            <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+        </div>
+        <div class="mb-3">
+            <label for="username" class="form-label">Tên đăng nhập:</label><span class="text-danger">*</span>
+            <input type="text" class="form-control" th:field="*{username}" id="username">
+            <span class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Mật khẩu:</label><span class="text-danger">*</span>
+            <input type="password" class="form-control" th:field="*{password}" id="password">
+            <span class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+        </div>
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">Đăng ký</button>
+            <hr>
+            <a href="/oauth2/authorization/google" class="btn btn-google">Register with Google</a>
+            <a href="/oauth2/authorization/facebook" class="btn btn-facebook">Register with Facebook</a>
+        </div>
+    </form>
+    <div class="text-center">
+        <a th:href="@{/login}" class="text-primary">Đã có tài khoản? Đăng nhập ngay!</a>
     </div>
 </div>
 

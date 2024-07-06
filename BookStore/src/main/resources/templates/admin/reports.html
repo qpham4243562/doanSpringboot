@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <title>Manage Reports</title>
   <!-- Replace link CSS from layout -->
-  <th:block th:replace="~{layout :: link-css}"></th:block>
+  <th:block th:replace="~{layoutAdmin :: link-css}"></th:block>
+  <!-- Replace header from layout -->
+  <th:block th:replace="~{layoutAdmin :: header}"></th:block>
 </head>
-<body layout:decorate="~{layout}">
-<!-- Replace header from layout -->
-<th:block th:replace="~{layout :: header}"></th:block>
 
-<main layout:fragment="content">
+<body layout:decorate="~{layoutAdmin}">
+<main layout:fragment="content1">
   <div class="container mt-4">
     <h1>Pending Reports</h1>
     <table class="table">
@@ -46,6 +46,6 @@
 </main>
 
 <!-- Replace footer from layout -->
-<th:block th:replace="~{layout :: footer}"></th:block>
+<th:block th:replace="~{layoutAdmin :: footer}"></th:block>
 </body>
 </html>

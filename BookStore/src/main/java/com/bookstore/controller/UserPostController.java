@@ -316,9 +316,16 @@ public class UserPostController {
     @GetMapping("/notifications")
     public String getNotifications(Model model, Principal principal) {
         User currentUser = userRepository.findByUsername(principal.getName());
-        List<Notification> notifications = notificationService.getUnreadNotifications(currentUser);
+        List<Notification> notifications = notificationService.getAllNotifications(currentUser);
         model.addAttribute("notifications", notifications);
         return "user-post/notifications";
+    }
+
+    @PostMapping("/mark-all-as-read")
+    public String markAllAsRead(Principal principal) {
+        User currentUser = userRepository.findByUsername(principal.getName());
+        notificationService.markAllNotificationsAsRead(currentUser);
+        return "redirect:/user-posts/notifications";
     }
     @PostMapping("/notifications/{id}/mark-as-read")
     public String markNotificationAsRead(@PathVariable Long id) {

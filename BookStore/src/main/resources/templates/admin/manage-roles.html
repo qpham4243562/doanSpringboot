@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <title>Manage Roles - My App</title>
     <!-- Include CSS from layout -->
-    <th:block th:replace="~{layout :: link-css}"></th:block>
+    <th:block th:replace="~{layoutAdmin :: link-css}"></th:block>
+    <!-- Include header from layout -->
+    <th:block th:replace="~{layoutAdmin :: header}"></th:block>
 </head>
-<body layout:decorate="~{layout}">
-<!-- Include header from layout -->
-<th:block th:replace="~{layout :: header}"></th:block>
 
-<main layout:fragment="content">
+<body layout:decorate="~{layoutAdmin}">
+<main layout:fragment="content1">
     <div class="container">
         <h1 class="mb-4">Manage Roles</h1>
         <form th:action="@{/admin/roles/assign}" method="post">
@@ -40,6 +40,6 @@
 </main>
 
 <!-- Include footer from layout -->
-<th:block th:replace="~{layout :: footer}"></th:block>
+<th:block th:replace="~{layoutAdmin :: footer}"></th:block>
 </body>
 </html>

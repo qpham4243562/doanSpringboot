@@ -51,6 +51,7 @@ public class FriendRequestController {
         Friend friendRequest = friendRequestService.findById(friendRequestId);
         if (friendRequest != null) {
             friendRequestService.acceptFriendRequest(friendRequest);
+            notificationService.deleteNotificationByFriendRequest(friendRequest);
             return ResponseEntity.ok(Map.of("message", "Friend request accepted"));
         } else {
             return ResponseEntity.badRequest().body(Map.of("error", "Friend request not found"));
@@ -62,6 +63,7 @@ public class FriendRequestController {
         Friend friendRequest = friendRequestService.findById(friendRequestId);
         if (friendRequest != null) {
             friendRequestService.rejectFriendRequest(friendRequest);
+            notificationService.deleteNotificationByFriendRequest(friendRequest);
             return ResponseEntity.ok(Map.of("message", "Friend request rejected"));
         } else {
             return ResponseEntity.badRequest().body(Map.of("error", "Friend request not found"));
@@ -72,7 +74,13 @@ public class FriendRequestController {
     public ResponseEntity<?> unfriend(@RequestParam("friendId") Long friendId, Principal principal) {
         User user = userService.findByUsername(principal.getName());
         User friend = userService.findById(friendId);
+
+        if (user == null || friend == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid user or friend ID"));
+        }
+
         friendRequestService.unfriend(user, friend);
         return ResponseEntity.ok(Map.of("message", "Unfriended successfully"));
     }
+
 }

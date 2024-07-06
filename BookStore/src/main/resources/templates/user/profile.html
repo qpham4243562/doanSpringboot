@@ -3,6 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
 <head>
   <title>Profile</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <style>
     .post-images img {
       max-width: 100px;
@@ -35,45 +36,46 @@
 <!-- Replace header from layout -->
 <th:block th:replace="~{layout :: header}"></th:block>
 
-<main layout:fragment="content">
-  <h1>Profile</h1>
-  <div id="profileInfo" th:data-is-own-profile="${isOwnProfile}">
-    <img th:if="${imageBase64 != null}" th:src="'data:image/jpeg;base64,' + ${imageBase64}" alt="Profile Image" width="100" height="100" />
-    <p>Name: <span th:text="${user.name}"></span></p>
-    <button id="updateButton" class="btn btn-primary">Update Profile</button>
-  </div>
+<main layout:fragment="content" class="container mt-5">
+  <section id="profileInfo" th:data-is-own-profile="${isOwnProfile}" class="text-center mb-4">
+    <img th:if="${imageBase64 != null}" th:src="'data:image/jpeg;base64,' + ${imageBase64}" alt="Profile Image" class="rounded-circle" width="100" height="100" />
+    <p class="mt-3">Name: <span th:text="${user.name}"></span></p>
+    <button id="updateButton" class="btn btn-primary updateButton">Update Profile</button>
+  </section>
 
-  <div id="updateFormContainer" style="display: none;">
-    <form id="updateForm" th:action="@{/profile}" method="post" enctype="multipart/form-data" th:object="${profileDTO}">
+  <section id="updateFormContainer" style="display: none;" class="mb-5">
+    <form id="updateForm" th:action="@{/profile}" method="post" enctype="multipart/form-data" th:object="${profileDTO}" class="border p-3 rounded">
       <div class="form-group">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" th:field="*{name}" class="form-control" />
       </div>
       <div class="form-group">
         <label for="image">Profile Image:</label>
-        <input type="file" id="image" name="image" accept="image/*" class="form-control" />
+        <input type="file" id="image" name="image" accept="image/*" class="form-control-file" />
       </div>
-      <button type="submit" class="btn btn-primary">Update</button>
-      <button type="button" id="cancelButton" class="btn btn-secondary">Cancel</button>
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="button" id="cancelButton" class="btn btn-secondary">Cancel</button>
+      </div>
     </form>
-  </div>
+  </section>
 
   <!-- Friends List -->
-  <h2>Friends</h2>
-  <ul class="list-group friends-list">
-    <li th:each="friend : ${friends}" class="list-group-item d-flex justify-content-between align-items-center">
-      <img th:if="${friend.friend.image != null}"
-           th:src="'data:image/jpeg;base64,' + ${friend.friend.getBase64Image()}"
-           class="avatar-image friends-list img" alt="Avatar" width="50" height="50"/>
-      <span th:text="${friend.friend.name}"></span>
-      <button type="button" class="btn btn-danger btn-sm unfriend-btn" th:data-id="${friend.friend.id}">Unfriend</button>
-    </li>
-  </ul>
-
-
+  <section class="mb-5">
+    <h2>Friends</h2>
+    <ul class="list-group friends-list">
+      <li th:each="friend : ${friends}" class="list-group-item d-flex align-items-center">
+        <img th:if="${friend.friend.image != null}"
+             th:src="'data:image/jpeg;base64,' + ${friend.friend.getBase64Image()}"
+             class="avatar-image img-thumbnail" alt="Avatar" width="50" height="50"/>
+        <span th:text="${friend.friend.name}"></span>
+        <button type="button" class="btn btn-danger btn-sm ml-auto unfriend-btn" th:data-id="${friend.friend.id}">Unfriend</button>
+      </li>
+    </ul>
+  </section>
 
   <!-- User's Posts -->
-  <div th:if="${not #lists.isEmpty(userPosts)}">
+  <section th:if="${not #lists.isEmpty(userPosts)}" class="mb-5">
     <h2>Your Posts</h2>
     <div class="card-columns">
       <div th:each="userPost : ${userPosts}" class="card mb-3">
@@ -90,19 +92,21 @@
           <p>Comments: <span th:text="${userPost.commentCount}"></span></p>
           <div class="btn-group" role="group" aria-label="Post Actions">
             <a class="btn btn-primary edit-btn" th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
-            <a class="btn btn-danger delete-btn" th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
+            <form th:action="@{/user-posts/{id}/delete(id=${userPost.id})}" method="get" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?');">
+              <button type="submit" class="btn btn-danger delete-btn">Delete</button>
+            </form>
             <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div th:if="${#lists.isEmpty(userPosts)}">
+  </section>
+  <section th:if="${#lists.isEmpty(userPosts)}">
     <p>No posts found.</p>
-  </div>
+  </section>
 
   <!-- Followed Posts -->
-  <div th:if="${not #lists.isEmpty(followedPosts)}">
+  <section th:if="${not #lists.isEmpty(followedPosts)}" class="mb-5">
     <h2>Followed Posts</h2>
     <div class="card-columns">
       <div th:each="post : ${followedPosts}" class="card mb-3">
@@ -122,20 +126,27 @@
                     th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
             </button>
             <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
-            <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}" method="post" class="d-inline">
+            <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}"
+                  method="post"
+                  class="d-inline unfollow-btn"
+                  onsubmit="return confirm('Bạn có chắc chắn muốn bỏ theo dõi bài viết này không?');">
               <button type="submit" class="btn btn-info">Unfollow</button>
             </form>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div th:if="${#lists.isEmpty(followedPosts)}">
+  </section>
+  <section th:if="${#lists.isEmpty(followedPosts)}">
     <p>No posts found.</p>
-  </div>
+  </section>
 </main>
 
-  <!-- Replace footer from layout -->
+<!-- Replace footer from layout -->
 <th:block th:replace="~{layout :: footer}"></th:block>
+
+<!-- Include Bootstrap JS and dependencies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
