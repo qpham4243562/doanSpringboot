@@ -30,13 +30,15 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long commentId, User user) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
 
-        if (comment.getUser().getId().equals(user.getId())) {
+        if (comment.getUser().equals(user)) {
+            // Xóa các mục CommentLike liên quan trước khi xóa bình luận
             commentLikeRepository.deleteByCommentId(commentId);
+
             commentRepository.delete(comment);
         } else {
-            throw new RuntimeException("You are not authorized to delete this comment.");
+            throw new SecurityException("You are not allowed to delete this comment");
         }
     }
 

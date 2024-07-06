@@ -40,7 +40,7 @@
   <section id="profileInfo" th:data-is-own-profile="${isOwnProfile}" class="text-center mb-4">
     <img th:if="${imageBase64 != null}" th:src="'data:image/jpeg;base64,' + ${imageBase64}" alt="Profile Image" class="rounded-circle" width="100" height="100" />
     <p class="mt-3">Name: <span th:text="${user.name}"></span></p>
-    <button id="updateButton" class="btn btn-primary">Update Profile</button>
+    <button id="updateButton" class="btn btn-primary updateButton">Update Profile</button>
   </section>
 
   <section id="updateFormContainer" style="display: none;" class="mb-5">
@@ -91,8 +91,10 @@
           <span class="like-count" th:text="${userPost.likes}"></span>
           <p>Comments: <span th:text="${userPost.commentCount}"></span></p>
           <div class="btn-group" role="group" aria-label="Post Actions">
-            <a class="btn btn-primary" th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
-            <a class="btn btn-danger" th:href="@{/user-posts/{id}/delete(id=${userPost.id})}">Delete</a>
+            <a class="btn btn-primary edit-btn" th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
+            <form th:action="@{/user-posts/{id}/delete(id=${userPost.id})}" method="get" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?');">
+              <button type="submit" class="btn btn-danger delete-btn">Delete</button>
+            </form>
             <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
           </div>
         </div>
@@ -124,7 +126,7 @@
                     th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
             </button>
             <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
-            <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}" method="post" class="d-inline">
+            <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}" method="post" class="d-inline unfollow-btn">
               <button type="submit" class="btn btn-info">Unfollow</button>
             </form>
           </div>

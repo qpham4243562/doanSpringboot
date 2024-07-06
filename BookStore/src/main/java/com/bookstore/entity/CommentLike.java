@@ -18,7 +18,7 @@ public class CommentLike {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "comment_id", nullable = false)
+    @JoinColumn(name = "comment_id")
     private Comment comment;
 
     @Column(name = "created_at")
