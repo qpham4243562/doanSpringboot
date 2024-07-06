@@ -126,7 +126,10 @@
                     th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
             </button>
             <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
-            <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}" method="post" class="d-inline unfollow-btn">
+            <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}"
+                  method="post"
+                  class="d-inline unfollow-btn"
+                  onsubmit="return confirm('Bạn có chắc chắn muốn bỏ theo dõi bài viết này không?');">
               <button type="submit" class="btn btn-info">Unfollow</button>
             </form>
           </div>

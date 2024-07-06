@@ -83,6 +83,7 @@
     <h2>Recent User Posts</h2>
     <div th:each="userPost : ${userPosts}" class="card mb-3">
       <div class="card-body">
+        <img th:src="'data:image/jpeg;base64,' + ${userPost.user.getImage()}" class="user-profile-img" alt="User Profile Image" />
         <h5 class="card-title" th:text="${userPost.user.name}"></h5>
         <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
         <p class="card-text" th:text="${userPost.content}"></p>
