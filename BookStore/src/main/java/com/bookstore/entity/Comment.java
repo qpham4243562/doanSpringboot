@@ -3,9 +3,7 @@ package com.bookstore.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
@@ -34,7 +32,7 @@ public class Comment {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
-    private Set<CommentLike> likes = new HashSet<>();
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentLike> likes = new ArrayList<>();
 
 }

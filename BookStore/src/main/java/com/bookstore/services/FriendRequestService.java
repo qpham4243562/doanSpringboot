@@ -48,6 +48,7 @@ public class FriendRequestService {
         }
     }
 
+
     public List<Friend> getFriends(User user) {
         return friendRepository.findByUserAndStatus(user, "ACCEPTED");
     }

@@ -32,4 +32,6 @@ public class Notification {
 
     @Column(name = "related_user_id")
     private Long relatedUserId;
+    @Column(name = "friend_request_id")
+    private Long friendRequestId;
 }
