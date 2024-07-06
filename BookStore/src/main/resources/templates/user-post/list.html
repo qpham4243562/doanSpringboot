@@ -16,14 +16,14 @@
 
   <!-- Filter form -->
   <form id="filterForm" class="form-inline mb-3" th:action="@{/user-posts}" method="get">
-    <select class="custom-select mr-sm-2 " id="selectedClass" name="selectedClass">
+    <select class="custom-select mr-sm-2 border-orange " id="selectedClass" name="selectedClass">
       <option value="">Chọn khối</option>
       <option th:each="classEntity : ${classEntities}"
               th:value="${classEntity.id}"
               th:text="${classEntity.name}"
               th:selected="${classEntity.id == selectedClassId}"></option>
     </select>
-    <select class="custom-select mr-sm-2 dropdown-orange" id="selectedSubject" name="selectedSubject">
+    <select class="custom-select mr-sm-2 border-orange" id="selectedSubject" name="selectedSubject">
       <option value="">Chọn môn học</option>
       <option th:each="subjectEntity : ${subjectEntities}"
               th:value="${subjectEntity.id}"
