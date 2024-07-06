@@ -6,13 +6,76 @@
   <th:block th:replace="~{layout :: link-css}"></th:block>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/js/custom_js.js"></script>
+  <style>
+    .container {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        font-size: 2.5rem;
+        color: #343a40;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    form .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+
+    .list-group-item {
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        padding: 15px;
+        transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    .list-group-item:hover {
+        background-color: #f1f3f5;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .list-group-item .btn {
+        margin-left: 10px;
+        border-radius: 3px;
+    }
+
+    .list-group-item .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .list-group-item .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .list-group-item .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .list-group-item .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+
+    .list-group-item .badge {
+        margin-left: 10px;
+    }
+
+  </style>
 </head>
 <body layout:decorate="~{layout}">
 <th:block th:replace="~{layout :: header}"></th:block>
 
 <main layout:fragment="content">
   <div class="container">
-    <h2>Notifications</h2>
+    <h2>Thông Báo</h2>
     <form th:action="@{/user-posts/mark-all-as-read}" method="post" class="mb-3">
       <button type="submit" class="btn btn-primary">Xem tất cả thông báo</button>
     </form>
