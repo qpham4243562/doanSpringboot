@@ -70,6 +70,10 @@
     .horses:hover {
       color: blue !important;
     }
+  .horses:hover {
+    color: blue !important;
+    }
+
   </style>
 </head>
 <body layout:decorate="~{layout}">
@@ -80,6 +84,7 @@
     <h2>Thông Báo</h2>
     <form th:action="@{/user-posts/mark-all-as-read}" method="post" class="mb-3">
       <button type="submit" class="btn horses" style="background-color: #FC8717;color: white">Xem tất cả thông báo</button>
+      <button type="submit" class="btn horses" style="background-color: #FC8717; color: white;">Xem tất cả thông báo</button>
     </form>
     <ul class="list-group">
       <li th:each="notification : ${notifications}" class="list-group-item d-flex justify-content-between align-items-center">

@@ -3,56 +3,132 @@
 <head>
   <meta charset="UTF-8">
   <title>Edit User Post</title>
-  <!-- Replace link CSS from layout -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
   <th:block th:replace="~{layout :: link-css}"></th:block>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/js/custom_js.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+  <style>
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.375rem 0.75rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #495057;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+    }
+
+    .form-control-file {
+      display: block;
+      width: 100%;
+    }
+
+    .img-thumbnail {
+      display: inline-block;
+      max-width: 200px;
+      margin: 0.5rem;
+      border-radius: 0.25rem;
+      border: 1px solid #dee2e6;
+    }
+
+    .form-group label {
+      font-weight: bold;
+    }
+
+    .form-group h3 {
+      margin-top: 1rem;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background-color: #007bff;
+      border-color: #007bff;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      border-radius: 0.25rem;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .form-control:focus {
+      border-color: #80bdff;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .image-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .image-container a {
+      margin: 0.5rem;
+    }
+  </style>
 </head>
 <body layout:decorate="~{layout}">
-<!-- Replace header from layout -->
 <th:block th:replace="~{layout :: header}"></th:block>
 
-<main layout:fragment="content">
-  <h1>Edit User Post</h1>
+<main layout:fragment="content" class="container">
+  <h1 class="mb-4">Edit Post</h1>
   <form th:action="@{/user-posts/{id}/edit(id=${userPost.id})}" th:object="${userPost}" method="post" enctype="multipart/form-data">
-    <div>
+    <div class="form-group">
       <label for="content">Content:</label>
-      <textarea id="content" th:field="*{content}"></textarea>
+      <textarea id="content" th:field="*{content}" class="form-control" rows="4"></textarea>
     </div>
-    <div>
+    <div class="form-group">
       <label for="classEntity">Class:</label>
-      <select id="classEntity" th:field="*{classEntity}">
+      <select id="classEntity" th:field="*{classEntity}" class="form-control">
         <option th:each="classEntity : ${classEntities}"
                 th:value="${classEntity.id}"
                 th:text="${classEntity.name}"
                 th:selected="${classEntity.id == userPost.classEntity.id}"></option>
       </select>
     </div>
-    <div>
+    <div class="form-group">
       <label for="subjectEntity">Subject:</label>
-      <select id="subjectEntity" th:field="*{subjectEntity}">
+      <select id="subjectEntity" th:field="*{subjectEntity}" class="form-control">
         <option th:each="subjectEntity : ${subjectEntities}"
                 th:value="${subjectEntity.id}"
                 th:text="${subjectEntity.name}"
                 th:selected="${subjectEntity.id == userPost.subjectEntity.id}"></option>
       </select>
     </div>
-    <div>
+    <div class="form-group">
       <label for="images">Add New Images:</label>
-      <input type="file" id="images" name="images" multiple>
+      <input type="file" id="images" name="images" multiple class="form-control-file">
     </div>
     <!-- Display existing images -->
-    <div th:if="${userPost.images != null and not #lists.isEmpty(userPost.images)}">
+    <div class="form-group" th:if="${userPost.images != null and not #lists.isEmpty(userPost.images)}">
       <h3>Existing Images:</h3>
-      <div th:each="image : ${userPost.images}">
-        <img th:src="@{/user-posts/images/{id}(id=${image.id})}" alt="Post Image" style="max-width: 200px;">
+      <div class="image-container">
+        <a th:each="image : ${userPost.images}"
+           th:href="@{/user-posts/images/{id}(id=${image.id})}"
+           data-lightbox="post-images"
+           th:data-title="${userPost.content}">
+          <img th:src="@{/user-posts/images/{id}(id=${image.id})}" alt="Post Image" class="img-thumbnail">
+        </a>
       </div>
     </div>
-    <button type="submit">Update User Post</button>
+    <div class="form-group">
+      <button type="submit" style="background-color: #FC8717; color: white; border-radius: 10%; border: white 1px solid ">Update</button>
+    </div>
   </form>
 </main>
 
-<!-- Replace footer from layout -->
 <th:block th:replace="~{layout :: footer}"></th:block>
 </body>
 </html>
