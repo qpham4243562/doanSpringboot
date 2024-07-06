@@ -85,7 +85,10 @@
           </button>
 
           <form th:if="${comment.user.id == currentUser.id}"
-                th:action="@{/user-posts/comments/{commentId}/delete(commentId=${comment.id})}" method="post" class="d-inline">
+                th:action="@{/user-posts/comments/{commentId}/delete(commentId=${comment.id})}"
+                method="post"
+                class="d-inline"
+                onsubmit="return confirm('Bạn có chắc chắn muốn xóa bình luận này không?');">
             <input type="hidden" name="postId" th:value="${userPost.id}" />
             <button class="btn btn-sm btn-outline-danger delete-comment-btn"
                     data-comment-id="${comment.id}"
