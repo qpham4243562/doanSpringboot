@@ -125,4 +125,39 @@ public class UserController {
         userService.save(currentUser);
         return "redirect:/profile";
     }
+    @GetMapping("/reset-password")
+    public String showResetPasswordForm(@RequestParam("token") String token, Model model) {
+        if (!userService.isValidToken(token)) {
+            model.addAttribute("error", "Token không hợp lệ hoặc đã hết hạn.");
+            return "user/reset-password";
+        }
+        model.addAttribute("token", token);
+        return "user/reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String processResetPassword(@RequestParam("token") String token,
+                                       @RequestParam("password") String password, Model model) {
+        if (userService.updatePassword(token, password)) {
+            model.addAttribute("message", "Mật khẩu đã được đặt lại thành công!");
+        } else {
+            model.addAttribute("error", "Token không hợp lệ hoặc đã hết hạn.");
+        }
+        return "user/reset-password";
+    }
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordForm() {
+        return "user/forgot-password";
+    }
+
+    @PostMapping("/forgot-password")
+    public String processForgotPassword(@RequestParam("email") String email, Model model) {
+        boolean result = userService.processForgotPassword(email);
+        if (result) {
+            model.addAttribute("message", "Đã gửi email đặt lại mật khẩu!");
+        } else {
+            model.addAttribute("error", "Email không tồn tại trong hệ thống!");
+        }
+        return "user/forgot-password";
+    }
 }

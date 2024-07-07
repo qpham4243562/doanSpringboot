@@ -1,65 +1,28 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "messages")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private User sender;
 
-    @Column(nullable = false)
-    private String text;
+    @ManyToOne
+    private User recipient;
 
-    @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
-
-    // Constructors, getters, and setters
-    public Message() {}
-
-    public Message(User user, String text) {
-        this.user = user;
-        this.text = text;
-        this.timestamp = new Date();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
+    private String content;
+    private LocalDateTime timestamp;
 }

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Content</title>
+</head>
+<body>
+<div th:fragment="chatFragment">
+  <h2>Chat with <span th:text="${recipient.username}"></span></h2>
+  <div id="chat-messages" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+    <div th:each="message : ${messages}">
+      <strong th:text="${message.sender.username}"></strong>: <span th:text="${message.content}"></span>
+    </div>
+  </div>
+  <form id="chat-form">
+    <div class="form-group">
+      <input type="text" id="message" class="form-control" placeholder="Type a message...">
+    </div>
+    <button type="submit" class="btn btn-primary">Send</button>
+    <input type="hidden" id="recipientId" th:value="${recipient.id}">
+  </form>
+</div>
+</body>
+</html>
