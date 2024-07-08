@@ -9,10 +9,12 @@ import com.bookstore.services.UserPostService;
 import com.bookstore.services.UserServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Base64;
 import java.util.List;
 
@@ -31,16 +32,18 @@ public class UserController {
 
     @Autowired
     private UserServices userService;
+
     @Autowired
     private FriendRequestService friendRequestService;
+
+    @Autowired
+    private UserPostService userPostService;
 
     @GetMapping("/login")
     public String login() {
         return "user/login";
     }
 
-    @Autowired
-    private UserPostService userPostService;
     @GetMapping("/register")
     public String register(Model model) {
         model.addAttribute("user", new User());
@@ -61,8 +64,9 @@ public class UserController {
         userService.save(user);
         return "redirect:/login";
     }
+
     @GetMapping("/profile")
-    public String showProfile(@RequestParam(required = false) Long userId, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    public String showProfile(@RequestParam(required = false) Long userId, Model model, Authentication authentication) {
         User user;
         boolean isOwnProfile;
         if (userId != null) {
@@ -70,9 +74,9 @@ public class UserController {
             if (user == null) {
                 return "redirect:/";  // or to an error page
             }
-            isOwnProfile = user.getUsername().equals(userDetails.getUsername());
+            isOwnProfile = authentication != null && user.getUsername().equals(authentication.getName());
         } else {
-            String username = userDetails.getUsername();
+            String username = authentication.getName();
             user = userService.findByUsername(username);
             isOwnProfile = true; // Because it's the logged-in user accessing their own profile
         }
@@ -106,11 +110,9 @@ public class UserController {
         return "user/profile";
     }
 
-
-
     @PostMapping("/profile")
-    public String updateProfile(@ModelAttribute("profileDTO") ProfileDTO profileDTO, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
-        User currentUser = userService.findByUsername(userDetails.getUsername());
+    public String updateProfile(@ModelAttribute("profileDTO") ProfileDTO profileDTO, Authentication authentication) throws IOException {
+        User currentUser = userService.findByUsername(authentication.getName());
 
         if (profileDTO.getName() != null && !profileDTO.getName().isEmpty()) {
             currentUser.setName(profileDTO.getName());
@@ -119,12 +121,12 @@ public class UserController {
         if (profileDTO.getImage() != null && !profileDTO.getImage().isEmpty()) {
             byte[] imageBytes = profileDTO.getImage().getBytes();
             currentUser.setImage(imageBytes);
-
         }
 
         userService.save(currentUser);
         return "redirect:/profile";
     }
+
     @GetMapping("/reset-password")
     public String showResetPasswordForm(@RequestParam("token") String token, Model model) {
         if (!userService.isValidToken(token)) {
@@ -145,6 +147,7 @@ public class UserController {
         }
         return "user/reset-password";
     }
+
     @GetMapping("/forgot-password")
     public String showForgotPasswordForm() {
         return "user/forgot-password";
@@ -160,4 +163,20 @@ public class UserController {
         }
         return "user/forgot-password";
     }
+
+    @GetMapping("/oauth2/success")
+    public String handleOAuth2Success(Model model, @AuthenticationPrincipal OAuth2User oauth2User) {
+        String email = oauth2User.getAttribute("email");
+        User user = userService.findByEmail(email);
+        if (user != null) {
+            // Lưu thông tin người dùng vào Principal
+            Authentication authentication = new UsernamePasswordAuthenticationToken(oauth2User, null, oauth2User.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            return "redirect:/user-posts";
+        } else {
+            model.addAttribute("error", "Không thể đăng nhập bằng Google. Vui lòng thử lại.");
+            return "user/login";
+        }
+    }
+
 }
