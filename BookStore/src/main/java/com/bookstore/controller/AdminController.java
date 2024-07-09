@@ -31,7 +31,11 @@ public class AdminController {
 
     @Autowired
     private PostReportService postReportService;
+    @Autowired
+    private ClassService classService;
 
+    @Autowired
+    private SubjectService subjectService;
     @GetMapping("/roles")
     public String manageRoles(Model model) {
         model.addAttribute("users", userService.getAllUsers());
@@ -134,6 +138,14 @@ public class AdminController {
     public String editUserEmail(@PathVariable Long id, @RequestParam String newEmail) {
         userService.updateUserEmail(id, newEmail);
         return "redirect:/admin/users";
+    }
+    @GetMapping("/posts")
+    public String managePosts(Model model) {
+        List<User_Post> posts = userPostService.getAllUserPosts();
+        model.addAttribute("posts", posts);
+        model.addAttribute("classEntities", classService.getAllClasses());
+        model.addAttribute("subjectEntities", subjectService.getAllSubjects());
+        return "admin/manage-posts";
     }
 
 }
