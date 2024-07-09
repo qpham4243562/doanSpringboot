@@ -2,6 +2,7 @@ package com.bookstore.repository;
 
 import com.bookstore.entity.Role;
 import com.bookstore.entity.User;
+import com.bookstore.entity.User_Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -40,4 +41,6 @@ public interface IUserRepository extends JpaRepository<User, Long> { // Chuyển
     List<User> findByEnabledTrue();
 
     List<User> findUsersByEmailContaining(String email);
+
+    List<User> findAllByFollowedPostsContaining(User_Post post);
 }
