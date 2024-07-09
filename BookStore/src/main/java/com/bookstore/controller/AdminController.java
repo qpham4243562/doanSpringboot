@@ -140,12 +140,24 @@ public class AdminController {
         return "redirect:/admin/users";
     }
     @GetMapping("/posts")
-    public String managePosts(Model model) {
-        List<User_Post> posts = userPostService.getAllUserPosts();
+    public String managePosts(Model model, @RequestParam(value = "search", required = false) String search) {
+        List<User_Post> posts;
+        if (search != null && !search.isEmpty()) {
+            posts = userPostService.searchPosts(search);
+        } else {
+            posts = userPostService.getAllUserPosts();
+        }
         model.addAttribute("posts", posts);
         model.addAttribute("classEntities", classService.getAllClasses());
         model.addAttribute("subjectEntities", subjectService.getAllSubjects());
         return "admin/manage-posts";
     }
 
+    @PostMapping("/{id}/delete1")
+    public String delete1Post(@PathVariable Long id) {
+        User_Post post = userPostService.getUserPostById(id);
+        userPostService.deleteUserPost(id);
+        notificationService.createDeletedNotification(post);
+        return "redirect:/admin/posts";
+    }
 }
