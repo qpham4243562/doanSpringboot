@@ -4,6 +4,7 @@
 <head>
   <title>Profile</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <style>
     .post-images img {
       max-width: 100px;
@@ -62,7 +63,7 @@
 
   <!-- Friends List -->
   <section class="mb-5">
-    <h2>Friends</h2>
+    <h2>Bạn bè</h2>
     <ul class="list-group friends-list">
       <li th:each="friend : ${friends}" class="list-group-item d-flex align-items-center">
         <img th:if="${friend.friend.image != null}"
@@ -75,68 +76,136 @@
   </section>
 
   <!-- User's Posts -->
-  <section th:if="${not #lists.isEmpty(userPosts)}" class="mb-5">
-    <h2>Your Posts</h2>
-    <div class="card-columns">
-      <div th:each="userPost : ${userPosts}" class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title" th:text="${userPost.user.name}"></h5>
-          <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
-          <p class="card-text" th:text="${userPost.content}"></p>
-          <p>Class: <span th:text="${userPost.classEntity.name}"></span></p>
-          <p>Subject: <span th:text="${userPost.subjectEntity.name}"></span></p>
-          <div class="post-images">
-            <img th:each="image : ${userPost.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+  <div th:if="${not #lists.isEmpty(userPosts)}">
+    <h2>Bài viết của bạn</h2>
+    <div th:each="userPost : ${userPosts}" class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div class="d-flex align-items-center">
+            <a th:href="@{/profile(userId=${userPost.user.id})}">
+              <img th:if="${userPost.user.image != null}"
+                   th:src="'data:image/jpeg;base64,' + ${userPost.user.getBase64Image()}"
+                   class="rounded-circle mr-2"
+                   width="50" height="50" />
+            </a>
+            <div>
+              <h5 class="card-title mb-0" th:text="${userPost.user.name}"></h5>
+              <h6 class="card-subtitle mt-1 text-muted" style="color: #6c757d; font-size: 0.85rem;" th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
+            </div>
           </div>
-          <span class="like-count" th:text="${userPost.likes}"></span>
-          <p>Comments: <span th:text="${userPost.commentCount}"></span></p>
-          <div class="btn-group" role="group" aria-label="Post Actions">
-            <a class="btn btn-primary edit-btn" th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
-            <form th:action="@{/user-posts/{id}/delete(id=${userPost.id})}" method="get" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?');">
-              <button type="submit" class="btn btn-danger delete-btn">Delete</button>
+          <div class="d-flex align-items-center ml-auto">
+            <form th:if="${#lists.contains(followedPosts, userPost)}" th:action="@{/user-posts/{id}/unfollow(id=${userPost.id})}" method="post" class="d-inline mr-2">
+              <button type="submit" class="btn btn-outline-info">Unfollow</button>
             </form>
-            <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
+            <form th:unless="${#lists.contains(followedPosts, userPost)}" th:action="@{/user-posts/{id}/follow(id=${userPost.id})}" method="post" class="d-inline mr-2">
+              <button type="submit" class="btn btn-outline-info">Follow</button>
+            </form>
           </div>
+        </div>
+        <hr>
+        <div class="d-flex align-items-center text-right p-2" style="background-color: #f8f9fa; color: #6c757d; border-radius: 5px;">
+          <p class="mb-0 mr-2">Class: <span th:text="${userPost.classEntity.name}"></span></p>
+          <p class="mb-0"> Subject: <span th:text="${userPost.subjectEntity.name}"></span></p>
+        </div>
+
+
+        <p class="card-text mt-2" th:text="${userPost.content}"></p>
+        <div class="post-images mb-2 d-flex flex-wrap">
+          <a th:each="image : ${userPost.images}" th:href="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" data-lightbox="userPostImages">
+            <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" class="img-thumbnail mr-1 mb-1" style="width: 100%; max-width: 400px; height: auto;" />
+          </a>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-start align-items-center">
+            <button type="button" class="btn btn-outline-primary like-btn mr-2" th:data-post-id="${userPost.id}">
+              <i class="fa-solid fa-thumbs-up"></i> <!-- Icon for Like -->
+              <span th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}" class="ml-1"></span>
+            </button>
+            <span class="like-count mr-2" th:text="${userPost.likes}"></span>
+            <a th:href="@{/user-posts/{id}(id=${userPost.id})}" class="btn btn-outline-secondary mr-2">
+              <i class="fa-regular fa-message"></i> Comment
+            </a>
+            <p class="mb-0"><span th:text="${userPost.commentCount}"></span></p>
+          </div>
+          <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post" class="d-inline-flex align-items-center mr-2">
+            <input type="text" name="reason" placeholder="Reason for reporting" class="form-control mr-2" required>
+            <button type="submit" class="btn btn-outline-warning">
+              <i class="fa-solid fa-flag"></i>
+            </button>
+          </form>
         </div>
       </div>
     </div>
-  </section>
+  </div>
   <section th:if="${#lists.isEmpty(userPosts)}">
     <p>No posts found.</p>
   </section>
 
   <!-- Followed Posts -->
   <section th:if="${not #lists.isEmpty(followedPosts)}" class="mb-5">
-    <h2>Followed Posts</h2>
-    <div class="card-columns">
-      <div th:each="post : ${followedPosts}" class="card mb-3">
+    <h2>Bài viết đang theo dõi</h2>
+    <div th:if="${not #lists.isEmpty(userPosts)}">
+      <div th:each="userPost : ${userPosts}" class="card mb-3">
         <div class="card-body">
-          <h5 class="card-title" th:text="${post.user.name}"></h5>
-          <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
-          <p class="card-text" th:text="${post.content}"></p>
-          <p>Class: <span th:text="${post.classEntity.name}"></span></p>
-          <p>Subject: <span th:text="${post.subjectEntity.name}"></span></p>
-          <div class="post-images">
-            <img th:each="image : ${post.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center">
+              <a th:href="@{/profile(userId=${userPost.user.id})}">
+                <img th:if="${userPost.user.image != null}"
+                     th:src="'data:image/jpeg;base64,' + ${userPost.user.getBase64Image()}"
+                     class="rounded-circle mr-2"
+                     width="50" height="50" />
+              </a>
+              <div>
+                <h5 class="card-title mb-0" th:text="${userPost.user.name}"></h5>
+                <h6 class="card-subtitle mt-1 text-muted" style="color: #6c757d; font-size: 0.85rem;" th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
+              </div>
+            </div>
+            <div class="d-flex align-items-center ml-auto">
+              <form th:if="${#lists.contains(followedPosts, userPost)}" th:action="@{/user-posts/{id}/unfollow(id=${userPost.id})}" method="post" class="d-inline mr-2">
+                <button type="submit" class="btn btn-outline-info">Unfollow</button>
+              </form>
+              <form th:unless="${#lists.contains(followedPosts, userPost)}" th:action="@{/user-posts/{id}/follow(id=${userPost.id})}" method="post" class="d-inline mr-2">
+                <button type="submit" class="btn btn-outline-info">Follow</button>
+              </form>
+            </div>
           </div>
-          <span class="like-count" th:text="${post.likes}"></span>
-          <p>Comments: <span th:text="${post.commentCount}"></span></p>
-          <div class="btn-group" role="group" aria-label="Post Actions">
-            <button type="button" class="btn btn-primary like-btn" th:data-post-id="${post.id}"
-                    th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
-            </button>
-            <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
-            <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}"
-                  method="post"
-                  class="d-inline unfollow-btn"
-                  onsubmit="return confirm('Bạn có chắc chắn muốn bỏ theo dõi bài viết này không?');">
-              <button type="submit" class="btn btn-info">Unfollow</button>
+          <hr>
+          <div class="d-flex align-items-center text-right p-2" style="background-color: #f8f9fa; color: #6c757d; border-radius: 5px;">
+            <p class="mb-0 mr-2">Class: <span th:text="${userPost.classEntity.name}"></span></p>
+            <p class="mb-0"> Subject: <span th:text="${userPost.subjectEntity.name}"></span></p>
+          </div>
+
+
+          <p class="card-text mt-2" th:text="${userPost.content}"></p>
+          <div class="post-images mb-2 d-flex flex-wrap">
+            <a th:each="image : ${userPost.images}" th:href="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" data-lightbox="userPostImages">
+              <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" class="img-thumbnail mr-1 mb-1" style="width: 100%; max-width: 400px; height: auto;" />
+            </a>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-start align-items-center">
+              <button type="button" class="btn btn-outline-primary like-btn mr-2" th:data-post-id="${userPost.id}">
+                <i class="fa-solid fa-thumbs-up"></i> <!-- Icon for Like -->
+                <span th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}" class="ml-1"></span>
+              </button>
+              <span class="like-count mr-2" th:text="${userPost.likes}"></span>
+              <a th:href="@{/user-posts/{id}(id=${userPost.id})}" class="btn btn-outline-secondary mr-2">
+                <i class="fa-regular fa-message"></i> Comment
+              </a>
+              <p class="mb-0"><span th:text="${userPost.commentCount}"></span></p>
+            </div>
+            <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post" class="d-inline-flex align-items-center mr-2">
+              <input type="text" name="reason" placeholder="Reason for reporting" class="form-control mr-2" required>
+              <button type="submit" class="btn btn-outline-warning">
+                <i class="fa-solid fa-flag"></i>
+              </button>
             </form>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </div>  </section>
   <section th:if="${#lists.isEmpty(followedPosts)}">
     <p>No posts found.</p>
   </section>
