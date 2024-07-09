@@ -102,8 +102,9 @@ public class AdminController {
 
     @GetMapping("/sbadmin")
     public String trangChuAdmin(Model m){
-        return "layoutAdmin";
+        return "admin/home";
     }
+
     @GetMapping("/users")
     public String manageUsers(Model model) {
         model.addAttribute("users", userService.getAllUsers());
