@@ -15,8 +15,8 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/js/custom_js.js"></script>
     <style>
-        hr {
-            border: 1px solid black !important;
+        .line {
+            border: .5px solid black !important;
         }
         .post-images img {
           max-width: 100px; /* Example size for post images */
@@ -134,7 +134,7 @@
                             </form>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="line ">
                     <div class="d-flex align-items-center text-right p-2"
                          style="background-color: #f8f9fa; color: #6c757d; border-radius: 5px;">
                         <p class="mb-0 mr-2">Class: <span th:text="${userPost.classEntity.name}"></span></p>
@@ -151,7 +151,7 @@
                                  class="img-thumbnail mr-1 mb-1" style="width: 100%; max-width: 400px; height: auto;"/>
                         </a>
                     </div>
-                    <hr>
+                    <hr class="line ">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex justify-content-start align-items-center">
                             <button type="button" class="btn btn-outline-primary like-btn mr-2"
