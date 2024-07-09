@@ -2,7 +2,6 @@ package com.bookstore.services;
 
 import com.bookstore.entity.CustomUserDetail;
 import com.bookstore.entity.User;
-import com.bookstore.exception.UserDisabledException;
 import com.bookstore.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;

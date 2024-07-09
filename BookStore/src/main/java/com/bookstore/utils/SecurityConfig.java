@@ -66,20 +66,6 @@ public class SecurityConfig {
         };
     }
 
-    @Bean
-    public AuthenticationFailureHandler customAuthenticationFailureHandler() {
-        return new SimpleUrlAuthenticationFailureHandler("/login?error") {
-            @Override
-            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                String errorMessage = "Invalid username or password";
-                if (exception instanceof DisabledException) {
-                    errorMessage = "User account is disabled";
-                }
-                request.getSession().setAttribute("error_message", errorMessage);
-                super.onAuthenticationFailure(request, response, exception);
-            }
-        };
-    }
 
 
     @Bean
@@ -102,7 +88,6 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/user-posts", true)
-                        .failureHandler(customAuthenticationFailureHandler())
                         .permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -114,19 +99,9 @@ public class SecurityConfig {
                             request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", new SecurityContextImpl(authentication));
                             response.sendRedirect("/oauth2/success");
                         })
-                        .failureHandler(customAuthenticationFailureHandler())
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .accessDeniedHandler(customAccessDeniedHandler())
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            if (authException instanceof DisabledException) {
-                                request.getSession().setAttribute("error_message", "Tài khoản của bạn đã bị khóa.");
-                                response.sendRedirect("/login?error");
-                            } else {
-                                response.sendRedirect("/login?error");
-                            }
-                        })
-                )
+                        .accessDeniedHandler(customAccessDeniedHandler()))
                 .rememberMe(rememberMe -> rememberMe
                         .key("uniqueAndSecret")
                         .tokenValiditySeconds(86400)
