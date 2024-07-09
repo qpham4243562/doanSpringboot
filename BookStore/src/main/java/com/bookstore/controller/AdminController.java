@@ -36,7 +36,7 @@ public class AdminController {
     public String manageRoles(Model model) {
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("roles", roleService.getAllRoles());
-        return "admin/manage-roles";
+        return "/admin/manage-roles";
     }
 
     @PostMapping("/roles/assign")
@@ -45,14 +45,14 @@ public class AdminController {
         model.addAttribute("message", message);
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("roles", roleService.getAllRoles());
-        return "admin/manage-roles";
+        return "/admin/manage-roles";
     }
 
     @GetMapping("/unapproved")
     public String showUnapprovedPosts(Model model) {
         List<User_Post> unapprovedPosts = userPostService.getAllUnapprovedPosts();
         model.addAttribute("unapprovedPosts", unapprovedPosts);
-        return "admin/unapproved-posts";
+        return "/admin/unapproved-posts";
     }
 
     @PostMapping("/{id}/approve")
@@ -71,12 +71,11 @@ public class AdminController {
     }
 
 
-
     @GetMapping("/reports")
     public String showReports(Model model) {
         List<PostReport> pendingReports = postReportService.getPendingReports();
         model.addAttribute("pendingReports", pendingReports);
-        return "admin/reports";
+        return "/admin/reports";
     }
 
     @PostMapping("/reports/{reportId}/resolve")
@@ -98,12 +97,13 @@ public class AdminController {
 
     @GetMapping("/sbadmin")
     public String trangChuAdmin(Model m){
-        return "layoutAdmin";
+        return "/layoutAdmin";
     }
+
     @GetMapping("/users")
     public String manageUsers(Model model) {
         model.addAttribute("users", userService.getAllUsers());
-        return "admin/manage-users";
+        return "/admin/manage-users";
     }
 
     @PostMapping("/users/{id}/disable")
@@ -128,7 +128,7 @@ public class AdminController {
     public String searchUsersByEmail(@RequestParam String email, Model model) {
         List<User> users = userService.searchUsersByEmail(email);
         model.addAttribute("users", users);
-        return "admin/manage-users";
+        return "/admin/manage-users";
     }
     @PostMapping("/users/{id}/edit-email")
     public String editUserEmail(@PathVariable Long id, @RequestParam String newEmail) {

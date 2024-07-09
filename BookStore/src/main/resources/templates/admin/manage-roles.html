@@ -6,14 +6,12 @@
     <title>Manage Roles - My App</title>
     <!-- Include CSS from layout -->
     <th:block th:replace="~{layoutAdmin :: link-css}"></th:block>
-    <!-- Include header from layout -->
-    <th:block th:replace="~{layoutAdmin :: header}"></th:block>
 </head>
-
-<body layout:decorate="~{layoutAdmin}">
-<main layout:fragment="content1">
-    <div class="container">
-        <h1 class="mb-4">Manage Roles</h1>
+<!-- Include header from layout -->
+<th:block th:replace="~{layoutAdmin :: body}"></th:block>
+<main>
+    <div class="container mt-4">
+        <h1>Manage Roles</h1>
         <form th:action="@{/admin/roles/assign}" method="post">
             <div class="row">
                 <div class="col-md-6 mb-3">

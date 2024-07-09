@@ -5,12 +5,10 @@
   <title>Manage Reports</title>
   <!-- Replace link CSS from layout -->
   <th:block th:replace="~{layoutAdmin :: link-css}"></th:block>
-  <!-- Replace header from layout -->
-  <th:block th:replace="~{layoutAdmin :: header}"></th:block>
 </head>
-
-<body layout:decorate="~{layoutAdmin}">
-<main layout:fragment="content1">
+<!-- Replace header from layout -->
+<th:block th:replace="~{layoutAdmin::body}"></th:block>
+<main>
   <div class="container mt-4">
     <h1>Pending Reports</h1>
     <table class="table">

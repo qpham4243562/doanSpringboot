@@ -13,12 +13,12 @@
         }
     </style>
 
-    <!-- Include header from layout -->
-    <th:block th:replace="~{layoutAdmin :: header}"></th:block>
 </head>
 
-<body layout:decorate="~{layoutAdmin}">
-<main layout:fragment="content1">
+<!-- Include header from layout -->
+<th:block th:replace="~{layoutAdmin :: body}"></th:block>
+<main>
+    <div class="container mt-4">
     <h1>Unapproved Posts</h1>
     <table>
         <thead>
@@ -49,6 +49,7 @@
         </tr>
         </tbody>
     </table>
+    </div>
 </main>
 
 <!-- Include footer from layout -->
