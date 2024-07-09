@@ -15,6 +15,9 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/js/custom_js.js"></script>
     <style>
+        hr {
+            border: 1px solid black !important;
+        }
         .post-images img {
           max-width: 100px; /* Example size for post images */
           max-height: 100px; /* Example size for post images */
@@ -76,9 +79,9 @@
 <header th:replace="~{layout :: header}"></header>
 
 <main layout:fragment="content">
-    <h1>Kết quả tìm kiếm</h1>
-
     <div class="container">
+        <h1>Kết quả tìm kiếm</h1>
+
         <div th:if="${users.size() > 0}" class="user-list">
             <h2 class="text-center mb-4">Người dùng</h2>
             <div class="w-100">

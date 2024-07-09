@@ -2,153 +2,153 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
 <head>
-  <title>Profile</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
-  <style>
-    .post-images img {
-      max-width: 100px;
-      max-height: 100px;
-      margin-right: 10px;
-    }
-    .friends-list ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    .friends-list li {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .friends-list img {
-      margin-right: 10px;
-      border-radius: 50%;
-    }
-    .friends-list form {
-      margin-left: auto;
-    }
-  </style>
-  <!-- Replace link CSS from layout -->
-  <th:block th:replace="~{layout :: link-css}"></th:block>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="/js/custom_js.js"></script>
+    <title>Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+    <style>
+        .post-images img {
+          max-width: 100px;
+          max-height: 100px;
+          margin-right: 10px;
+        }
+        .friends-list ul {
+          list-style-type: none;
+          padding: 0;
+        }
+        .friends-list li {
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px;
+        }
+        .friends-list img {
+          margin-right: 10px;
+          border-radius: 50%;
+        }
+        .friends-list form {
+          margin-left: auto;
+        }
+    </style>
+    <!-- Replace link CSS from layout -->
+    <th:block th:replace="~{layout :: link-css}"></th:block>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/custom_js.js"></script>
 </head>
 <body layout:decorate="~{layout}">
 <!-- Replace header from layout -->
 <th:block th:replace="~{layout :: header}"></th:block>
 
 <main layout:fragment="content" class="container mt-5">
-  <section id="profileInfo" th:data-is-own-profile="${isOwnProfile}" class="text-center mb-4">
-    <img th:if="${imageBase64 != null}" th:src="'data:image/jpeg;base64,' + ${imageBase64}" alt="Profile Image" class="rounded-circle" width="100" height="100" />
-    <div class="mt-3 flex items-center justify-center">
-      <span class="mr-1 fs-4" th:text="${user.name}"></span>
-      <button id="updateButton" class="btn updateButton"><i class="fa-solid fa-pencil" style="color: #FFD43B;"></i></button>
-    </div>
-  </section>
-
-  <section id="updateFormContainer" style="display: none;" class="mb-5">
-    <div class="max-w-md mx-auto bg-white rounded-lg overflow-hidden shadow-lg">
-      <form id="updateForm" th:action="@{/profile}" method="post" enctype="multipart/form-data" th:object="${profileDTO}" class="border p-3">
-        <div class="p-4">
-          <div class="mb-4">
-            <label for="name" class="block text-gray-700 text-sm font-bold mb-2"></label>
-            <input type="text" id="name" name="name" th:field="*{name}" class="form-input px-4 py-3 rounded-lg border-2 w-full" placeholder="Enter your name">
-          </div>
-          <div class="mb-4">
-            <input type="file" id="image" name="image" accept="image/*" class="form-input px-4 py-3 rounded-lg border-2 w-full">
-          </div>
+    <section id="profileInfo" th:data-is-own-profile="${isOwnProfile}" class="text-center mb-4">
+        <img th:if="${imageBase64 != null}" th:src="'data:image/jpeg;base64,' + ${imageBase64}" alt="Profile Image" class="rounded-circle" width="100" height="100" />
+        <div class="mt-3 flex items-center justify-center">
+            <span class="mr-1 fs-4" th:text="${user.name}"></span>
+            <button id="updateButton" class="btn updateButton"><i class="fa-solid fa-pencil" style="color: #FFD43B;"></i></button>
         </div>
-        <div class="flex items-center justify-between px-4 py-3 bg-gray-100 border-t border-gray-200">
-          <button type="submit" class="btn btn-primary">Update</button>
-          <button type="button" id="cancelButton" class="btn btn-secondary">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </section>
+    </section>
 
-
-  <!-- Friends List -->
-  <section class="mb-5">
-    <h2>Friends</h2>
-    <ul class="list-group friends-list">
-      <li th:each="friend : ${friends}" class="list-group-item d-flex align-items-center">
-        <img th:if="${friend.friend.image != null}"
-             th:src="'data:image/jpeg;base64,' + ${friend.friend.getBase64Image()}"
-             class="avatar-image img-thumbnail" alt="Avatar" width="50" height="50"/>
-        <span th:text="${friend.friend.name}"></span>
-        <button type="button" class="btn btn-danger btn-sm ml-auto unfriend-btn" th:data-id="${friend.friend.id}">Unfriend</button>
-      </li>
-    </ul>
-  </section>
-
-  <!-- User's Posts -->
-  <section th:if="${not #lists.isEmpty(userPosts)}" class="mb-5">
-    <h2>Your Posts</h2>
-    <div class="card-columns">
-      <div th:each="userPost : ${userPosts}" class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title" th:text="${userPost.user.name}"></h5>
-          <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
-          <p class="card-text" th:text="${userPost.content}"></p>
-          <p>Class: <span th:text="${userPost.classEntity.name}"></span></p>
-          <p>Subject: <span th:text="${userPost.subjectEntity.name}"></span></p>
-          <div class="post-images">
-            <img th:each="image : ${userPost.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
-          </div>
-          <span class="like-count" th:text="${userPost.likes}"></span>
-          <p>Comments: <span th:text="${userPost.commentCount}"></span></p>
-          <div class="btn-group" role="group" aria-label="Post Actions">
-            <a class="btn btn-primary edit-btn" th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
-            <form th:action="@{/user-posts/{id}/delete(id=${userPost.id})}" method="get" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?');">
-              <button type="submit" class="btn btn-danger delete-btn">Delete</button>
+    <section id="updateFormContainer" style="display: none;" class="mb-5">
+        <div class="max-w-md mx-auto bg-white rounded-lg overflow-hidden shadow-lg">
+            <form id="updateForm" th:action="@{/profile}" method="post" enctype="multipart/form-data" th:object="${profileDTO}" class="border p-3">
+                <div class="p-4">
+                    <div class="mb-4">
+                        <label for="name" class="block text-gray-700 text-sm font-bold mb-2"></label>
+                        <input type="text" id="name" name="name" th:field="*{name}" class="form-input px-4 py-3 rounded-lg border-2 w-full" placeholder="Enter your name">
+                    </div>
+                    <div class="mb-4">
+                        <input type="file" id="image" name="image" accept="image/*" class="form-input px-4 py-3 rounded-lg border-2 w-full">
+                    </div>
+                </div>
+                <div class="flex items-center justify-between px-4 py-3 bg-gray-100 border-t border-gray-200">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" id="cancelButton" class="btn btn-secondary">Cancel</button>
+                </div>
             </form>
-            <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
-          </div>
         </div>
-      </div>
-    </div>
-  </section>
-  <section th:if="${#lists.isEmpty(userPosts)}">
-    <p>No posts found.</p>
-  </section>
+    </section>
 
-  <!-- Followed Posts -->
-  <section th:if="${not #lists.isEmpty(followedPosts)}" class="mb-5">
-    <h2>Followed Posts</h2>
-    <div class="card-columns">
-      <div th:each="post : ${followedPosts}" class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title" th:text="${post.user.name}"></h5>
-          <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
-          <p class="card-text" th:text="${post.content}"></p>
-          <p>Class: <span th:text="${post.classEntity.name}"></span></p>
-          <p>Subject: <span th:text="${post.subjectEntity.name}"></span></p>
-          <div class="post-images">
-            <img th:each="image : ${post.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
-          </div>
-          <span class="like-count" th:text="${post.likes}"></span>
-          <p>Comments: <span th:text="${post.commentCount}"></span></p>
-          <div class="btn-group" role="group" aria-label="Post Actions">
-            <button type="button" class="btn btn-primary like-btn" th:data-post-id="${post.id}"
-                    th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
-            </button>
-            <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
-            <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}"
-                  method="post"
-                  class="d-inline unfollow-btn"
-                  onsubmit="return confirm('Bạn có chắc chắn muốn bỏ theo dõi bài viết này không?');">
-              <button type="submit" class="btn btn-info">Unfollow</button>
-            </form>
-          </div>
+
+    <!-- Friends List -->
+    <section class="mb-5">
+        <h2>Friends</h2>
+        <ul class="list-group friends-list">
+            <li th:each="friend : ${friends}" class="list-group-item d-flex align-items-center">
+                <img th:if="${friend.friend.image != null}"
+                     th:src="'data:image/jpeg;base64,' + ${friend.friend.getBase64Image()}"
+                     class="avatar-image img-thumbnail" alt="Avatar" width="50" height="50"/>
+                <span th:text="${friend.friend.name}"></span>
+                <button type="button" class="btn btn-danger btn-sm ml-auto unfriend-btn" th:data-id="${friend.friend.id}">Unfriend</button>
+            </li>
+        </ul>
+    </section>
+
+    <!-- User's Posts -->
+    <section th:if="${not #lists.isEmpty(userPosts)}" class="mb-5">
+        <h2>Your Posts</h2>
+        <div class="card-columns">
+            <div th:each="userPost : ${userPosts}" class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${userPost.user.name}"></h5>
+                    <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
+                    <p class="card-text" th:text="${userPost.content}"></p>
+                    <p>Class: <span th:text="${userPost.classEntity.name}"></span></p>
+                    <p>Subject: <span th:text="${userPost.subjectEntity.name}"></span></p>
+                    <div class="post-images">
+                        <img th:each="image : ${userPost.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+                    </div>
+                    <span class="like-count" th:text="${userPost.likes}"></span>
+                    <p>Comments: <span th:text="${userPost.commentCount}"></span></p>
+                    <div class="btn-group" role="group" aria-label="Post Actions">
+                        <a class="btn btn-primary edit-btn" th:href="@{/user-posts/{id}/edit(id=${userPost.id})}">Edit</a>
+                        <form th:action="@{/user-posts/{id}/delete(id=${userPost.id})}" method="get" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?');">
+                            <button type="submit" class="btn btn-danger delete-btn">Delete</button>
+                        </form>
+                        <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${userPost.id})}">Comments</a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </section>
-  <section th:if="${#lists.isEmpty(followedPosts)}">
-    <p>No posts found.</p>
-  </section>
+    </section>
+    <section th:if="${#lists.isEmpty(userPosts)}">
+        <p>No posts found.</p>
+    </section>
+
+    <!-- Followed Posts -->
+    <section th:if="${not #lists.isEmpty(followedPosts)}" class="mb-5">
+        <h2>Followed Posts</h2>
+        <div class="card-columns">
+            <div th:each="post : ${followedPosts}" class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${post.user.name}"></h5>
+                    <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
+                    <p class="card-text" th:text="${post.content}"></p>
+                    <p>Class: <span th:text="${post.classEntity.name}"></span></p>
+                    <p>Subject: <span th:text="${post.subjectEntity.name}"></span></p>
+                    <div class="post-images">
+                        <img th:each="image : ${post.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
+                    </div>
+                    <span class="like-count" th:text="${post.likes}"></span>
+                    <p>Comments: <span th:text="${post.commentCount}"></span></p>
+                    <div class="btn-group" role="group" aria-label="Post Actions">
+                        <button type="button" class="btn btn-primary like-btn" th:data-post-id="${post.id}"
+                                th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
+                        </button>
+                        <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
+                        <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}"
+                              method="post"
+                              class="d-inline unfollow-btn"
+                              onsubmit="return confirm('Bạn có chắc chắn muốn bỏ theo dõi bài viết này không?');">
+                            <button type="submit" class="btn btn-info">Unfollow</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section th:if="${#lists.isEmpty(followedPosts)}">
+        <p>No posts found.</p>
+    </section>
 </main>
 
 <!-- Replace footer from layout -->
