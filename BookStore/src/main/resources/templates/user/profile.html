@@ -39,7 +39,7 @@
 <main layout:fragment="content" class="container mt-5">
   <section id="profileInfo" th:data-is-own-profile="${isOwnProfile}" class="text-center mb-4">
     <img th:if="${imageBase64 != null}" th:src="'data:image/jpeg;base64,' + ${imageBase64}" alt="Profile Image" class="rounded-circle" width="100" height="100" />
-    <p class="mt-3"> <strong><span    th:text="${user.name}"></span> </strong></p>
+    <p class="mt-3">Name: <span th:text="${user.name}"></span></p>
     <button id="updateButton" class="btn btn-primary updateButton">Update Profile</button>
   </section>
 
@@ -126,7 +126,10 @@
                     th:text="${#lists.contains(post.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
             </button>
             <a class="btn btn-secondary" th:href="@{/user-posts/{id}(id=${post.id})}">Comments</a>
-            <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}" method="post" class="d-inline unfollow-btn">
+            <form th:action="@{/user-posts/{id}/unfollow(id=${post.id})}"
+                  method="post"
+                  class="d-inline unfollow-btn"
+                  onsubmit="return confirm('Bạn có chắc chắn muốn bỏ theo dõi bài viết này không?');">
               <button type="submit" class="btn btn-info">Unfollow</button>
             </form>
           </div>

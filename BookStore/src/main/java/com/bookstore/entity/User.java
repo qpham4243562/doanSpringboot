@@ -55,9 +55,6 @@
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<UserPostLike> userPostLikes;
 
-        public List<UserPostLike> getUserPostLikes() {
-            return userPostLikes;
-        }
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<User_Post> userPosts;
         @ManyToMany(fetch = FetchType.LAZY)
@@ -73,31 +70,16 @@
 
         @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Friend> friendRequests;
+        @Column(name = "enabled", nullable = false)
+        private Boolean enabled;
 
-        // Methods to handle friend requests
-        public void addFriendRequest(Friend friendRequest) {
-            this.friendRequests.add(friendRequest);
-        }
 
-        public void removeFriendRequest(Friend friendRequest) {
-            this.friendRequests.remove(friendRequest);
-        }
 
-        public void acceptFriendRequest(Friend friend) {
-            this.friends.add(friend);
-        }
 
-        public void rejectFriendRequest(Friend friend) {
-            this.removeFriendRequest(friend);
-        }
 
-        public void unfriend(Friend friend) {
-            this.friends.remove(friend);
-        }
 
-        public void setUserPostLikes(List<UserPostLike> userPostLikes) {
-            this.userPostLikes = userPostLikes;
-        }
+
+
         public String getBase64Image() {
             return Base64.encodeBase64String(image);
         }
@@ -108,9 +90,7 @@
             return followedPosts;
         }
 
-        public void setFollowedPosts(List<User_Post> followedPosts) {
-            this.followedPosts = followedPosts;
-        }
+
 
         public void followPost(User_Post post) {
             this.followedPosts.add(post);
@@ -118,6 +98,9 @@
 
         public void unfollowPost(User_Post post) {
             this.followedPosts.remove(post);
+        }
+        public boolean isEnabled() {
+            return enabled;
         }
 
     }

@@ -83,35 +83,43 @@
     <h2>Recent User Posts</h2>
     <div th:each="userPost : ${userPosts}" class="card mb-3">
       <div class="card-body">
+        <img th:if="${userPost.user.image != null}"
+             th:src="'data:image/jpeg;base64,' + ${userPost.user.getBase64Image()}"
+             width="50" height="50" />
         <h5 class="card-title" th:text="${userPost.user.name}"></h5>
         <h6 class="card-subtitle mb-2 text-muted" th:text="${#dates.format(userPost.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></h6>
         <p class="card-text" th:text="${userPost.content}"></p>
+
         <p>Class: <span th:text="${userPost.classEntity.name}"></span></p>
         <p>Subject: <span th:text="${userPost.subjectEntity.name}"></span></p>
         <div class="post-images">
           <img th:each="image : ${userPost.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" />
         </div>
+        <hr>
         <span class="like-count" th:text="${userPost.likes}"></span>
         <p>Comments: <span th:text="${userPost.commentCount}"></span></p>
-        <button type="button" class="btn btn-primary like-btn" th:data-post-id="${userPost.id}"
-                th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
-        </button>
-        <a th:href="@{/user-posts/{id}(id=${userPost.id})}" class="btn btn-secondary"><i class="fa-regular fa-message" style="color: #fc8717;"></i></a>
-        <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post" class="d-inline">
-          <input type="text" name="reason" placeholder="Reason for reporting" required>
-          <button type="submit" class="btn btn-warning">Report Post</button>
-        </form>
-        <form th:if="${#lists.contains(followedPosts, userPost)}"
-              th:action="@{/user-posts/{id}/unfollow(id=${userPost.id})}" method="post" class="d-inline">
-          <button type="submit" class="btn btn-info">Unfollow</button>
-        </form>
-        <form th:unless="${#lists.contains(followedPosts, userPost)}"
-              th:action="@{/user-posts/{id}/follow(id=${userPost.id})}" method="post" class="d-inline">
-          <button type="submit" class="btn btn-info">Follow</button>
-        </form>
+        <div class="btn-group" role="group" aria-label="Post Actions">
+          <button type="button" class="btn btn-primary like-btn" th:data-post-id="${userPost.id}"
+                  th:text="${#lists.contains(userPost.userPostLikes, #authentication.principal.id) ? 'Unlike' : 'Like'}">
+          </button>
+          <a th:href="@{/user-posts/{id}(id=${userPost.id})}" class="btn btn-secondary"><i class="fa-regular fa-message" style="color: #fc8717;"></i></a>
+          <form th:action="@{/user-posts/{id}/report(id=${userPost.id})}" method="post" class="d-inline">
+            <input type="text" name="reason" placeholder="Reason for reporting" required>
+            <button type="submit" class="btn btn-warning">Report Post</button>
+          </form>
+          <form th:if="${#lists.contains(followedPosts, userPost)}"
+                th:action="@{/user-posts/{id}/unfollow(id=${userPost.id})}" method="post" class="d-inline">
+            <button type="submit" class="btn btn-info">Unfollow</button>
+          </form>
+          <form th:unless="${#lists.contains(followedPosts, userPost)}"
+                th:action="@{/user-posts/{id}/follow(id=${userPost.id})}" method="post" class="d-inline">
+            <button type="submit" class="btn btn-info">Follow</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
+
 
   <div th:if="${#lists.isEmpty(userPosts)}">
     <p>No posts found.</p>

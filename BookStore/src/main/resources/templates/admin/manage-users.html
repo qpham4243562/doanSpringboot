@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin}">
+<head>
+    <title>Quản lý người dùng</title>
+    <th:block th:replace="~{layoutAdmin :: link-css}"></th:block>
+    <style>
+        .edit-form {
+          display: none; /* Ẩn form chỉnh sửa mặc định */
+        }
+
+        .card {
+          border: 0;
+          border-radius: 1.5rem;
+          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .card-body {
+          padding: 2rem;
+        }
+
+        .bg-manage-image {
+          background-image: url('https://source.unsplash.com/random/1920x1080');
+          background-size: cover;
+          background-position: center;
+        }
+    </style>
+</head>
+<!-- Include header from layout -->
+<th:block th:replace="~{layoutAdmin :: body}"></th:block>
+<main>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="card o-hidden border-0 shadow-lg">
+                    <div class="card-body p-0">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="text-gray-900 mb-4">Quản lý người dùng</h1>
+                            </div>
+                            <form th:action="@{/admin/users/search}" method="get" class="mb-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Tìm kiếm theo email"
+                                           name="email">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="submit">Tìm kiếm</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Email</th>
+                                    <th>Tên</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="user : ${users}">
+                                    <td th:text="${user.id}"></td>
+                                    <td th:text="${user.username}"></td>
+                                    <td th:text="${user.email}"></td>
+                                    <td th:text="${user.name}"></td>
+                                    <td th:text="${user.enabled == true ? 'Hoạt động' : 'Vô hiệu'}"></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-primary btn-sm" onclick="toggleEditForm(event)">Chỉnh
+                                                sửa
+                                            </button>
+                                            <form th:if="${user.enabled}"
+                                                  th:action="@{/admin/users/{id}/disable(id=${user.id})}" method="post"
+                                                  style="display: inline;">
+                                                <button type="submit" class="btn btn-warning btn-sm">Vô hiệu</button>
+                                            </form>
+                                            <form th:unless="${user.enabled}"
+                                                  th:action="@{/admin/users/{id}/enable(id=${user.id})}" method="post"
+                                                  style="display: inline;">
+                                                <button type="submit" class="btn btn-success btn-sm">Kích hoạt</button>
+                                            </form>
+                                        </div>
+
+                                        <!-- Form cập nhật email (ẩn mặc định) -->
+                                        <form th:action="@{/admin/users/{id}/edit-email(id=${user.id})}" method="post"
+                                              class="edit-form mt-2">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" placeholder="Nhập email mới"
+                                                       name="newEmail">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary" type="submit">Cập nhật
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    function toggleEditForm(event) {
+      var row = event.target.closest('tr');
+      var editForm = row.querySelector('.edit-form');
+
+      if (editForm.style.display === 'none') {
+        editForm.style.display = 'block';
+      } else {
+        editForm.style.display = 'none';
+      }
+    }
+</script>
+
+</body>
+</html>
