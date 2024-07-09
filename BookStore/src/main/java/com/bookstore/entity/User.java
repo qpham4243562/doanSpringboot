@@ -70,7 +70,7 @@
 
         @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Friend> friendRequests;
-        @Column(name = "enabled", nullable = false)
+        @Column(name = "enabled", nullable = true)
         private Boolean enabled;
 
 
