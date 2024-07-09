@@ -7,12 +7,14 @@ import com.bookstore.repository.CommentRepository;
 import com.bookstore.repository.IRoleRepository;
 import com.bookstore.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +30,7 @@ public class UserServices {
     @Autowired
     private JavaMailSender mailSender;
     @Autowired
+    @Lazy
     private PasswordEncoder passwordEncoder;
     @Autowired
     private CommentRepository commentRepository;
@@ -122,6 +125,14 @@ public class UserServices {
     public User findById(Long userId) {
         return userRepository.findById(userId).orElse(null);
     }
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
+    @Transactional
+    public User saveNewGoogleUser(User user) {
+        user.setRoles(List.of(roleRepository.findByName("USER")));
+        return userRepository.save(user);
+    }
 
 }

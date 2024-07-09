@@ -1,47 +1,81 @@
 package com.bookstore.controller;
 
+import com.bookstore.entity.Friend;
 import com.bookstore.entity.Message;
 import com.bookstore.entity.User;
+import com.bookstore.services.FriendRequestService;
 import com.bookstore.services.MessageService;
 import com.bookstore.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
-@RequestMapping("/")
 public class ChatController {
+
+    @Autowired
+    private UserServices userService;
 
     @Autowired
     private MessageService messageService;
 
     @Autowired
-    private UserServices userService;
+    private FriendRequestService friendRequestService;
 
     @GetMapping("/chat")
-    public String chat(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        User user = userService.findByUsername(userDetails.getUsername());
-        List<Message> messages = messageService.getAllMessages();
-        model.addAttribute("messages", messages);
-        model.addAttribute("user", user);
-        return "chat";
+    public String getChatPage(Model model, Principal principal) {
+        String username = principal.getName();
+        User currentUser = userService.findByUsername(username);
+        List<Friend> friends = friendRequestService.getFriends(currentUser);
+
+        model.addAttribute("friends", friends);
+        model.addAttribute("currentUser", currentUser);
+
+        return "chat/chat";
     }
 
-    @PostMapping("/send-message")
-    public String sendMessage(@RequestParam("text") String text, @AuthenticationPrincipal UserDetails userDetails) {
-        User user = userService.findByUsername(userDetails.getUsername());
-        Message message = new Message(user, text);
-        messageService.saveMessage(message);
-        return "redirect:/chat";
+    @GetMapping("/chat/{recipientId}")
+    public String getChatContent(@PathVariable Long recipientId, Model model, Principal principal) {
+        String username = principal.getName();
+        User sender = userService.findByUsername(username);
+        User recipient = userService.findById(recipientId);
+
+        List<Message> messages = messageService.getConversation(sender.getId(), recipientId);
+
+        model.addAttribute("messages", messages);
+        model.addAttribute("sender", sender);
+        model.addAttribute("recipient", recipient);
+
+        return "chatContent :: chatFragment";
+    }
+
+    @MessageMapping("/chat.sendMessage")
+    @SendTo("/topic/public")
+    public Message sendMessage(@Payload Message chatMessage) {
+        return messageService.save(chatMessage);
+    }
+
+    @MessageMapping("/chat.addUser")
+    @SendTo("/topic/public")
+    public Message addUser(@Payload Message chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+        if (chatMessage == null || chatMessage.getSender() == null) {
+            System.err.println("Unable to add user: chatMessage or chatMessage.getSender() is null");
+            return null;
+        }
+        if (headerAccessor != null && headerAccessor.getSessionAttributes() != null) {
+            headerAccessor.getSessionAttributes().put("username", chatMessage.getSender().getUsername());
+        } else {
+            // Log the error or handle it appropriately
+            System.err.println("Unable to add user: headerAccessor or its session attributes are null");
+        }
+        return chatMessage;
     }
 }
