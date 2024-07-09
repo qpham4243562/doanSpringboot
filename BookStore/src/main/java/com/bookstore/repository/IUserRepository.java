@@ -37,5 +37,7 @@ public interface IUserRepository extends JpaRepository<User, Long> { // Chuyển
     User findByResetPasswordToken(String token);
 
     List<User> findByNameContaining(String name);
+    List<User> findByEnabledTrue();
 
+    List<User> findUsersByEmailContaining(String email);
 }
