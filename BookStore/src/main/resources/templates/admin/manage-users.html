@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin}">
+<head>
+  <title>Manage Users</title>
+  <style>
+    .edit-form {
+      display: none; /* Hide the edit form by default */
+    }
+  </style>
+</head>
+<body>
+<div layout:fragment="content">
+  <h1>Manage Users</h1>
+  <form th:action="@{/admin/users/search}" method="get">
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" placeholder="Search by email" name="email">
+      <button class="btn btn-outline-secondary" type="submit">Search</button>
+    </div>
+  </form>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+      <td th:text="${user.id}"></td>
+      <td th:text="${user.username}"></td>
+      <td th:text="${user.email}"></td>
+      <td th:text="${user.name}"></td>
+      <td th:text="${user.enabled == true ? 'Active' : 'Disabled'}"></td>
+      <td>
+        <!-- Button to toggle edit form visibility -->
+        <button class="btn btn-primary" onclick="toggleEditForm(event)">Edit</button>
+        <form th:if="${user.enabled}" th:action="@{/admin/users/{id}/disable(id=${user.id})}" method="post" style="display: inline;">
+          <button type="submit" class="btn btn-warning">Disable</button>
+        </form>
+        <form th:unless="${user.enabled}" th:action="@{/admin/users/{id}/enable(id=${user.id})}" method="post" style="display: inline;">
+          <button type="submit" class="btn btn-success">Enable</button>
+        </form>
+
+        <!-- Form to update email (initially hidden) -->
+        <form th:action="@{/admin/users/{id}/edit-email(id=${user.id})}" method="post" class="edit-form">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Enter new email" name="newEmail">
+            <button class="btn btn-outline-secondary" type="submit">Update Email</button>
+          </div>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  function toggleEditForm(event) {
+    // Find the edit form in the same row as the clicked button
+    var row = event.target.closest('tr');
+    var editForm = row.querySelector('.edit-form');
+
+    // Toggle visibility of the edit form
+    if (editForm.style.display === 'none') {
+      editForm.style.display = 'block';
+    } else {
+      editForm.style.display = 'none';
+    }
+  }
+</script>
+
+</body>
+</html>

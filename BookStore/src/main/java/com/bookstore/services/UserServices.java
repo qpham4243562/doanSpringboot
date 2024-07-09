@@ -36,6 +36,9 @@ public class UserServices {
     private CommentRepository commentRepository;
     public void save(User user) {
         boolean isNewUser = user.getId() == null;
+        if (isNewUser) {
+            user.setEnabled(true); // Default to enabled for new users
+        }
         userRepository.save(user);
 
         if (isNewUser) {
@@ -47,6 +50,7 @@ public class UserServices {
             }
         }
     }
+
 
     @Transactional
     public boolean processForgotPassword(String email) {
@@ -134,5 +138,47 @@ public class UserServices {
         user.setRoles(List.of(roleRepository.findByName("USER")));
         return userRepository.save(user);
     }
+    @Transactional
+    public void disableUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setEnabled(false);
+        userRepository.save(user);
+    }
 
+    @Transactional
+    public void enableUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
+
+
+
+    public List<User> getActiveUsers() {
+        return userRepository.findByEnabledTrue();
+    }
+
+    @Transactional
+    public void updateUser(User updatedUser) {
+        User existingUser = userRepository.findById(updatedUser.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setName(updatedUser.getName());
+
+        userRepository.save(existingUser);
+    }
+    public List<User> searchUsersByEmail(String email) {
+        return userRepository.findUsersByEmailContaining(email);
+    }
+    @Transactional
+    public void updateUserEmail(Long userId, String newEmail) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setEmail(newEmail);
+        userRepository.save(user);
+    }
 }

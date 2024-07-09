@@ -70,6 +70,8 @@
 
         @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Friend> friendRequests;
+        @Column(name = "enabled", nullable = false)
+        private Boolean enabled;
 
 
 
@@ -96,6 +98,9 @@
 
         public void unfollowPost(User_Post post) {
             this.followedPosts.remove(post);
+        }
+        public boolean isEnabled() {
+            return enabled;
         }
 
     }

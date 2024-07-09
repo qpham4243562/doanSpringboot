@@ -2,6 +2,7 @@ package com.bookstore.services;
 
 import com.bookstore.entity.CustomUserDetail;
 import com.bookstore.entity.User;
+import com.bookstore.exception.UserDisabledException;
 import com.bookstore.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -54,6 +55,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
 
             user = userServices.saveNewGoogleUser(user);
+        }
+
+        if (!user.isEnabled()) { // Assuming 'isEnabled()' checks the 'enable' field
+            throw new UserDisabledException("User account is disabled: " + email);
         }
 
         // Ensure all necessary attributes are present
