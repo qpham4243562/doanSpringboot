@@ -2,10 +2,10 @@ package com.bookstore.services;
 
 import com.bookstore.entity.CustomUserDetail;
 import com.bookstore.entity.User;
-import com.bookstore.exception.UserDisabledException;
 import com.bookstore.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -58,7 +58,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         if (!user.isEnabled()) { // Assuming 'isEnabled()' checks the 'enable' field
-            throw new UserDisabledException("User account is disabled: " + email);
+            throw new DisabledException("User account is disabled");
         }
 
         // Ensure all necessary attributes are present
