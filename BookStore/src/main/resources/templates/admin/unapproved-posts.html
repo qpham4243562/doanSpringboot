@@ -1,5 +1,65 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Unapproved Posts</title>-->
+<!--    &lt;!&ndash; Include CSS from layout &ndash;&gt;-->
+<!--    <th:block th:replace="~{layoutAdmin :: link-css}"></th:block>-->
+<!--    <style>-->
+<!--        .post-images img {-->
+<!--          max-width: 100px;-->
+<!--          max-height: 100px;-->
+<!--          margin-right: 10px;-->
+<!--        }-->
+<!--    </style>-->
+
+<!--</head>-->
+
+<!--&lt;!&ndash; Include header from layout &ndash;&gt;-->
+<!--<th:block th:replace="~{layoutAdmin :: body}"></th:block>-->
+<!--<main>-->
+<!--    <div class="container mt-4">-->
+<!--    <h1>Unapproved Posts</h1>-->
+<!--    <table>-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>ID</th>-->
+<!--            <th>Content</th>-->
+<!--            <th>Images</th>-->
+<!--            <th>Actions</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="post : ${unapprovedPosts}">-->
+<!--            <td th:text="${post.id}"></td>-->
+<!--            <td th:text="${post.content}"></td>-->
+<!--            <td class="post-images">-->
+<!--                <div th:each="image : ${post.images}">-->
+<!--                    <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}"/>-->
+<!--                </div>-->
+<!--            </td>-->
+<!--            <td>-->
+<!--                <form th:action="@{/admin/{id}/approve(id=${post.id})}" method="post" style="display: inline-block;">-->
+<!--                    <button type="submit">Approve</button>-->
+<!--                </form>-->
+<!--                <form th:action="@{/admin/{id}/delete(id=${post.id})}" method="post" style="display: inline-block;">-->
+<!--                    <button type="submit">Delete</button>-->
+<!--                </form>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--    </div>-->
+<!--</main>-->
+
+<!--&lt;!&ndash; Include footer from layout &ndash;&gt;-->
+<!--<th:block th:replace="~{layoutAdmin :: footer}"></th:block>-->
+<!--</body>-->
+<!--</html>-->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin}">
 <head>
     <meta charset="UTF-8">
     <title>Unapproved Posts</title>
@@ -11,47 +71,72 @@
           max-height: 100px;
           margin-right: 10px;
         }
+
+        .card {
+          border: 0;
+          border-radius: 1.5rem;
+          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .card-body {
+          padding: 2rem;
+        }
+
+        .bg-manage-image {
+          background-image: url('https://source.unsplash.com/random/1920x1080');
+          background-size: cover;
+          background-position: center;
+        }
     </style>
-
 </head>
-
 <!-- Include header from layout -->
 <th:block th:replace="~{layoutAdmin :: body}"></th:block>
 <main>
     <div class="container mt-4">
-    <h1>Unapproved Posts</h1>
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Content</th>
-            <th>Images</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="post : ${unapprovedPosts}">
-            <td th:text="${post.id}"></td>
-            <td th:text="${post.content}"></td>
-            <td class="post-images">
-                <div th:each="image : ${post.images}">
-                    <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}"/>
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="card o-hidden border-0 shadow-lg">
+                    <div class="card-body p-0">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="text-gray-900 mb-4">Unapproved Posts</h1>
+                            </div>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Content</th>
+                                    <th>Images</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="post : ${unapprovedPosts}">
+                                    <td th:text="${post.id}"></td>
+                                    <td th:text="${post.content}"></td>
+                                    <td class="post-images">
+                                        <div th:each="image : ${post.images}">
+                                            <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <form th:action="@{/admin/{id}/approve(id=${post.id})}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                        </form>
+                                        <form th:action="@{/admin/{id}/delete(id=${post.id})}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </td>
-            <td>
-                <form th:action="@{/admin/{id}/approve(id=${post.id})}" method="post" style="display: inline-block;">
-                    <button type="submit">Approve</button>
-                </form>
-                <form th:action="@{/admin/{id}/delete(id=${post.id})}" method="post" style="display: inline-block;">
-                    <button type="submit">Delete</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            </div>
+        </div>
     </div>
 </main>
-
 <!-- Include footer from layout -->
 <th:block th:replace="~{layoutAdmin :: footer}"></th:block>
 </body>
