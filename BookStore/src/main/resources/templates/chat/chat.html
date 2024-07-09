@@ -31,6 +31,8 @@
 
 <script th:inline="javascript">
   $(document).ready(function() {
+    var stompClient = null;
+
     $(".friend-name").on("click", function() {
       var friendId = $(this).data("id");
       $.ajax({
@@ -38,52 +40,55 @@
         success: function(response) {
           $("#chat-content").html(response);
           $("#recipientId").val(friendId);  // Set the recipient ID dynamically
-          connect();  // Reconnect the WebSocket for the new chat
+          if (stompClient !== null) {
+            stompClient.disconnect();
+          }
+          connect();  // Connect to WebSocket for the new chat
         }
       });
     });
-  });
 
-  var stompClient = null;
-
-  function connect() {
-    var socket = new SockJS('/ws');
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, onConnected, onError);
-  }
-
-  function onConnected() {
-    stompClient.subscribe('/topic/public', onMessageReceived);
-  }
-
-  function onError(error) {
-    console.log('Could not connect to WebSocket server. Please refresh this page to try again!');
-  }
-
-  function sendMessage(event) {
-    var messageContent = $("#message").val().trim();
-    var recipientId = $("#recipientId").val();
-    if (messageContent && stompClient) {
-      var chatMessage = {
-        sender: {id: [[${currentUser.id}]], username: [[${currentUser.username}]]},
-        recipient: {id: recipientId},
-        content: messageContent,
-        type: 'CHAT'
-      };
-      stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
-      $("#message").val('');
+    function connect() {
+      var socket = new SockJS('/ws');
+      stompClient = Stomp.over(socket);
+      stompClient.connect({}, onConnected, onError);
     }
-    event.preventDefault();
-  }
 
-  function onMessageReceived(payload) {
-    var message = JSON.parse(payload.body);
-    var messageElement = '<div><strong>' + message.sender.username + '</strong>: ' + message.content + '</div>';
-    $("#chat-messages").append(messageElement);
-    $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
-  }
+    function onConnected() {
+      stompClient.subscribe('/topic/public', onMessageReceived);
+    }
 
-  $(document).on("submit", "#chat-form", sendMessage);
+    function onError(error) {
+      console.log('Could not connect to WebSocket server. Please refresh this page to try again!');
+    }
+
+    function sendMessage(event) {
+      event.preventDefault();
+      var messageContent = $("#message").val().trim();
+      var recipientId = $("#recipientId").val();
+      if (messageContent && stompClient && stompClient.connected) {
+        var chatMessage = {
+          sender: {id: [[${currentUser.id}]], username: [[${currentUser.username}]]},
+          recipient: {id: recipientId},
+          content: messageContent,
+          type: 'CHAT'
+        };
+        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+        $("#message").val('');
+      } else {
+        console.log('WebSocket is not connected.');
+      }
+    }
+
+    function onMessageReceived(payload) {
+      var message = JSON.parse(payload.body);
+      var messageElement = '<div><strong>' + message.sender.username + '</strong>: ' + message.content + '</div>';
+      $("#chat-messages").append(messageElement);
+      $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
+    }
+
+    $(document).on("submit", "#chat-form", sendMessage);
+  });
 </script>
 </body>
 </html>
