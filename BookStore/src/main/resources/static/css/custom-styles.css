@@ -106,3 +106,39 @@
 .line {
             border: .5px solid black !important;
         }
+.custom-button-update{
+        background-color: #FC8717;
+        color: white;
+        border-radius: 5px; /* Đã giảm từ 10% xuống 5px để bo góc mềm mại hơn */
+        border: 1px solid white;
+        padding: 10px 20px; /* Thêm khoảng đệm cho nút */
+        font-size: 16px; /* Tăng kích thước chữ */
+        font-weight: bold; /* Làm chữ đậm hơn */
+        transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu mượt mà */
+
+}
+.custom-button-update:hover{
+        background-color: #e56c00; /* Màu khi hover */
+
+}
+.custom-button-update:focus{
+        outline: none; /* Bỏ viền khi focus */
+        box-shadow: 0 0 0 2px rgba(252, 135, 23, 0.5); /* Thêm shadow khi focus */
+
+}
+
+.form-control-pro{
+display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+

@@ -7,16 +7,40 @@
     <title>Home Admin</title>
     <!-- Include CSS from layout -->
     <th:block th:replace="~{layoutAdmin :: link-css}"></th:block>
+
+    <!-- Custom CSS -->
     <style>
-        .container.mt-4 {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh; /* Adjust height as necessary */
+        body, html {
+            height: 100%; /* Ensure full height */
+            margin: 0; /* Remove default margin */
+            display: flex; /* Use flexbox for layout */
+            justify-content: center; /* Center align horizontally */
+            align-items: center; /* Center align vertically */
+            background: #f8f9fa; /* Light background color */
         }
-        img {
-            max-width: 100%;
-            height: auto; /* Keep aspect ratio */
+
+        .custom-container-home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            max-width: 1000px; /* Adjust width as necessary */
+        }
+
+        .custom-container-home img {
+            max-width: 600px;
+            height: auto;
+            border: 5px solid #343a40;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 5px; /* Space between text and image */
+        }
+
+        .welcome-message {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #343a40;
         }
     </style>
 </head>
@@ -24,8 +48,9 @@
 <!-- Include header from layout -->
 <th:block th:replace="~{layoutAdmin :: body}"></th:block>
 <main>
-    <div class="container mt-4">
-        <img class="max-width" src="/image/homeadmin.jpg" alt="Home Admin" width="1000" height="800">
+    <div class="custom-container-home">
+        <h2 class="welcome-message">Chào bạn đến với trang admin</h2>
+        <img src="/image/ciclesync.jpg" alt="Home Admin">
     </div>
 </main>
 <!-- Include footer from layout -->

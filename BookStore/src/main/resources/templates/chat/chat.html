@@ -95,7 +95,7 @@
             var recipientId = $("#recipientId").val();
             if (messageContent && stompClient && stompClient.connected) {
               var chatMessage = {
-                sender: {id: [[${currentUser.id}]], username: [[${currentUser.username}]]},
+                sender: {id: [[${currentUser.id}]], username: [[${currentUser.name}]]},
                 recipient: {id: recipientId},
                 content: messageContent,
                 type: 'CHAT'
@@ -109,7 +109,7 @@
 
           function onMessageReceived(payload) {
             var message = JSON.parse(payload.body);
-            var messageElement = '<div><strong>' + message.sender.username + '</strong>: ' + message.content + '</div>';
+            var messageElement = '<div><strong>' + message.sender.name + '</strong>: ' + message.content + '</div>';
             $("#chat-messages").append(messageElement);
             $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
           }

@@ -6,10 +6,10 @@
 </head>
 <body>
 <div th:fragment="chatFragment">
-  <h2>Nhắn tin với: <span th:text="${recipient.username}"></span></h2>
+  <h2>Nhắn tin với: <span th:text="${recipient.name}"></span></h2>
   <div id="chat-messages" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
     <div th:each="message : ${messages}">
-      <strong th:text="${message.sender.username}"></strong>: <span th:text="${message.content}"></span>
+      <strong th:text="${message.sender.name}"></strong>: <span th:text="${message.content}"></span>
     </div>
   </div>
   <form id="chat-form">
