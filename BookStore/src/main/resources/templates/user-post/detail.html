@@ -71,10 +71,10 @@
           <br>
           <button type="submit" class="btn btn-primary">Post Comment</button>
         </form>
-          <hr>
+          <hr class="line">
         <div th:each="comment : ${comments}" class="border rounded p-3 mb-3">
           <p th:text="${comment.content}">Comment Content</p>
-          <p class="text-muted">Posted by: <span th:text="${comment.user.username}">Username</span></p>
+          <p class="text-muted">Posted by: <span th:text="${comment.user.name}">Username</span></p>
           <p class="text-muted">Likes: <span class="like-count" th:text="${commentLikeCounts[comment.id]}">0</span></p>
 
           <button class="btn btn-sm btn-outline-primary like-button"
