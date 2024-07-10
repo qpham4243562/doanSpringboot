@@ -58,17 +58,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user = userServices.saveNewGoogleUser(user);
         }
 
-        if (!user.isEnabled()) { // Assuming 'isEnabled()' checks the 'enable' field
+        if (!user.isEnabled()) {
             throw new DisabledException("User account is disabled");
         }
 
-        // Ensure all necessary attributes are present
+
         attributes.put("id", user.getId().toString());
         attributes.put("email", user.getEmail());
         attributes.put("name", user.getName());
         attributes.put("username", user.getUsername());
 
-        // Use email as the name key if no specific user identifier is provided
+
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
         if (userNameAttributeName == null || userNameAttributeName.isEmpty()) {

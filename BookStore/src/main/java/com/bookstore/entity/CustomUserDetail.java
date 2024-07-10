@@ -38,7 +38,7 @@ public class CustomUserDetail implements UserDetails, OAuth2User {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        if (oAuth2User != null) { // Đăng nhập bằng Google
+        if (oAuth2User != null) {
             authorities.addAll(oAuth2User.getAuthorities());
         } else {
             authorities.addAll(Arrays.stream(userRepository.getRoleOfUser(user.getId()))
@@ -49,44 +49,44 @@ public class CustomUserDetail implements UserDetails, OAuth2User {
     }
     @Override
     public String getPassword() {
-        return user != null ? user.getPassword() : null; // Kiểm tra null
+        return user != null ? user.getPassword() : null;
     }
 
     @Override
     public String getUsername() {
-        return user != null ? user.getUsername() : oAuth2User.getName(); // Kiểm tra null
+        return user != null ? user.getUsername() : oAuth2User.getName();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Hoặc lấy từ thông tin user nếu có
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Hoặc lấy từ thông tin user nếu có
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Hoặc lấy từ thông tin user nếu có
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // Hoặc lấy từ thông tin user nếu có
+        return true;
     }
 
     public Long getId() {
-        return user != null ? user.getId() : null; // Kiểm tra null
+        return user != null ? user.getId() : null;
     }
     @Override
     public String getName() {
         if (oAuth2User != null) {
-            return oAuth2User.getName(); // Sử dụng tên từ oAuth2User nếu có
+            return oAuth2User.getName();
         } else {
-            return user.getUsername(); // Nếu không, sử dụng username từ User
+            return user.getUsername();
         }
     }
-    // ... Các phương thức khác của OAuth2User (getAttributes, getName, etc.) được ủy quyền cho oAuth2User
+
 }

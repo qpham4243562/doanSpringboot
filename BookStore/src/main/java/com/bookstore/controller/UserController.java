@@ -85,31 +85,31 @@ public class UserController {
         if (userId != null) {
             user = userService.findById(userId);
             if (user == null) {
-                return "redirect:/";  // or to an error page
+                return "redirect:/";
             }
             isOwnProfile = authentication != null && user.getUsername().equals(authentication.getName());
         } else {
             String username = authentication.getName();
             user = userService.findByUsername(username);
-            isOwnProfile = true; // Because it's the logged-in user accessing their own profile
+            isOwnProfile = true;
         }
 
-        // Convert image to Base64 for current user's avatar
+
         String imageBase64 = null;
         if (user.getImage() != null) {
             imageBase64 = Base64.getEncoder().encodeToString(user.getImage());
         }
 
-        // Get user's posts
+
         List<User_Post> userPosts = userPostService.getUserPostsByUser(user);
 
-        // Get followed posts
+
         List<User_Post> followedPosts = user.getFollowedPosts();
 
-        // Get friend requests
+
         List<Friend> friends = friendRequestService.getFriends(user);
 
-        // Add current user's profile information to the model
+
         model.addAttribute("user", user);
         model.addAttribute("imageBase64", imageBase64);
         model.addAttribute("userPosts", userPosts);

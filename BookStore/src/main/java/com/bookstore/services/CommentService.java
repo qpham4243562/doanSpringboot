@@ -33,7 +33,6 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
 
         if (comment.getUser().equals(user)) {
-            // Xóa các mục CommentLike liên quan trước khi xóa bình luận
             commentLikeRepository.deleteByCommentId(commentId);
 
             commentRepository.delete(comment);

@@ -18,9 +18,5 @@ public class ClassService {
         return classRepository.findAll();
     }
 
-    public ClassEntity getClassById(Long id) {
-        Optional<ClassEntity> classEntity = classRepository.findById(id);
-        return classEntity.orElse(null); // or handle as appropriate, e.g., throw an exception
-    }
 
 }

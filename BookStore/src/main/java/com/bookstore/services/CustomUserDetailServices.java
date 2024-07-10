@@ -22,7 +22,7 @@ public class CustomUserDetailServices implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
 
-        if (!user.isEnabled()) { // Assuming 'isEnabled()' checks the 'enable' field
+        if (!user.isEnabled()) {
             throw new DisabledException("User account is disabled: " + username);
         }
 

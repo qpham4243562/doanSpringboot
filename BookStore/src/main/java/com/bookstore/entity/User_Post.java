@@ -72,7 +72,5 @@ public class User_Post {
     }
 
 
-    public void setUserPostLikes(List<UserPostLike> userPostLikes) {
-        this.userPostLikes = userPostLikes;
-    }
+
 }

@@ -22,7 +22,7 @@ public class ClassEntity {
     public ClassEntity() {
     }
 
-    // Constructor to initialize with name
+
     public ClassEntity(Long id) {
         this.id = id;
     }

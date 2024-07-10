@@ -19,7 +19,7 @@ public class SubjectService {
     }
     public SubjectEntity getSubjectById(Long id) {
         Optional<SubjectEntity> subjectEntity = subjectRepository.findById(id);
-        return subjectEntity.orElse(null); // or handle as appropriate, e.g., throw an exception
+        return subjectEntity.orElse(null);
     }
 
 }

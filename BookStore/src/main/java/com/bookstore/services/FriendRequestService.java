@@ -22,7 +22,7 @@ public class FriendRequestService {
             throw new IllegalStateException("A friend request has already been sent.");
         }
 
-        // Check if they are already friends
+
         Friend existingFriendship = friendRepository.findByUserAndFriendAndStatus(fromUser, toUser, "ACCEPTED");
         if (existingFriendship != null) {
             throw new IllegalStateException("You are already friends with this user.");
@@ -39,7 +39,7 @@ public class FriendRequestService {
         friendRequest.setStatus("ACCEPTED");
         friendRepository.save(friendRequest);
 
-        // Create reverse friendship
+
         Friend reverseFriendship = new Friend();
         reverseFriendship.setUser(friendRequest.getFriend());
         reverseFriendship.setFriend(friendRequest.getUser());

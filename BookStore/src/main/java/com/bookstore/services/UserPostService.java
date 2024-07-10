@@ -55,18 +55,18 @@ public class UserPostService {
         User_Post post = userPostRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        // Remove all references in user_followed_posts
+
         List<User> usersFollowingPost = userRepository.findAllByFollowedPostsContaining(post);
         for (User user : usersFollowingPost) {
             user.getFollowedPosts().remove(post);
             userRepository.save(user);
         }
 
-        // Delete associated reports
+
         List<PostReport> reports = postReportRepository.findByUserPost(post);
         postReportRepository.deleteAll(reports);
 
-        // Now it's safe to delete the post
+
         userPostRepository.delete(post);
     }
     public Image getImageById(Long id) {

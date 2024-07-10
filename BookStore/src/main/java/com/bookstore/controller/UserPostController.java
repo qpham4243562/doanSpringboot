@@ -68,7 +68,7 @@ public class UserPostController {
                                   @RequestParam(value = "selectedSubject", required = false) Long selectedSubjectId,
                                   Model model,
                                   Principal principal) {
-        // Lấy danh sách các bài viết dựa vào các tham số lọc
+
         List<User_Post> userPosts;
         if (selectedClassId != null && selectedSubjectId != null) {
             userPosts = userPostService.getUserPostsByClassAndSubject(selectedClassId, selectedSubjectId);
@@ -80,29 +80,29 @@ public class UserPostController {
             userPosts = userPostService.getAllApprovedUserPosts();
         }
 
-        // Lọc ra những bài viết đã được phê duyệt
+
         userPosts = userPosts.stream().filter(User_Post::isApproved).collect(Collectors.toList());
 
-        // Cập nhật số lượng comment cho từng bài viết
+
         for (User_Post userPost : userPosts) {
             userPost.setCommentCount(commentService.countCommentsByUserPostId(userPost.getId()));
         }
 
-        // Sắp xếp các bài viết theo thời gian tạo mới nhất
+
         userPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
 
-        // Lấy thông tin người dùng hiện tại nếu có và kiểm tra null
+
         User currentUser = null;
         if (principal != null) {
             currentUser = userService.findByUsername(principal.getName());
             if (currentUser != null) {
-                // Lấy danh sách các bài viết đã follow của người dùng hiện tại
+
                 List<User_Post> followedPosts = currentUser.getFollowedPosts();
                 model.addAttribute("followedPosts", followedPosts);
             }
         }
 
-        // Thêm các attribute vào model
+
         model.addAttribute("userPosts", userPosts);
         model.addAttribute("classEntities", classService.getAllClasses());
         model.addAttribute("subjectEntities", subjectService.getAllSubjects());
@@ -231,7 +231,7 @@ public class UserPostController {
 
         userPostService.updateUserPost(userPost);
 
-        // Return số lượt thích hiện tại
+
         return ResponseEntity.ok(userPost.getLikes());
     }
 
@@ -245,14 +245,14 @@ public class UserPostController {
         User currentUser = userRepository.findByUsername(principal.getName());
         List<Comment> comments = commentService.getCommentsByUserPostId(postId);
 
-        // Calculate the like count for each comment
+
         Map<Long, Integer> commentLikeCounts = new HashMap<>();
         for (Comment comment : comments) {
             int likeCount = commentLikeService.getLikeCount(comment.getId());
             commentLikeCounts.put(comment.getId(), likeCount);
         }
 
-        // Sort comments by like count in descending order
+
         comments.sort((c1, c2) -> commentLikeCounts.get(c2.getId()) - commentLikeCounts.get(c1.getId()));
 
         model.addAttribute("userPost", userPost);
@@ -370,7 +370,7 @@ public class UserPostController {
         List<User> users = userService.searchUsers(query);
         List<User_Post> userPosts = userPostService.searchPosts(query);
 
-        // Get current user and their followed posts
+
         User currentUser = userService.findByUsername(principal.getName());
         List<User_Post> followedPosts = currentUser.getFollowedPosts();
 

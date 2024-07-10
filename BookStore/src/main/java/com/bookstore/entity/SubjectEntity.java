@@ -21,11 +21,5 @@ public class SubjectEntity {
 
     public SubjectEntity() {}
 
-    // Constructor to initialize with name
-    public SubjectEntity(String name) {
-        this.name = name;
-    }
-    public SubjectEntity(Long id) {
-        this.id = id;
-    }
+
 }
