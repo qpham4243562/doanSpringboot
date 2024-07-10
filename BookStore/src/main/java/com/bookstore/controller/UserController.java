@@ -4,7 +4,9 @@ import com.bookstore.dto.ProfileDTO;
 import com.bookstore.entity.Friend;
 import com.bookstore.entity.User;
 import com.bookstore.entity.User_Post;
+import com.bookstore.repository.IUserRepository;
 import com.bookstore.services.FriendRequestService;
+import com.bookstore.services.NotificationService;
 import com.bookstore.services.UserPostService;
 import com.bookstore.services.UserServices;
 import jakarta.validation.Valid;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Base64;
 import java.util.List;
 
@@ -38,7 +41,10 @@ public class UserController {
 
     @Autowired
     private UserPostService userPostService;
-
+    @Autowired
+    private NotificationService notificationService;
+    @Autowired
+    private IUserRepository userRepository;
     @GetMapping("/login")
     public String login() {
         return "user/login";
@@ -64,7 +70,14 @@ public class UserController {
         userService.save(user);
         return "redirect:/login";
     }
-
+    @ModelAttribute
+    public void addAttributes(Model model, Principal principal) {
+        if (principal != null) {
+            User currentUser = userRepository.findByUsername(principal.getName());
+            int unreadNotificationCount = notificationService.getUnreadNotifications(currentUser).size();
+            model.addAttribute("unreadNotificationCount", unreadNotificationCount);
+        }
+    }
     @GetMapping("/profile")
     public String showProfile(@RequestParam(required = false) Long userId, Model model, Authentication authentication) {
         User user;
