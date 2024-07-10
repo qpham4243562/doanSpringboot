@@ -3,8 +3,10 @@ package com.bookstore.controller;
 import com.bookstore.entity.Friend;
 import com.bookstore.entity.Message;
 import com.bookstore.entity.User;
+import com.bookstore.repository.IUserRepository;
 import com.bookstore.services.FriendRequestService;
 import com.bookstore.services.MessageService;
+import com.bookstore.services.NotificationService;
 import com.bookstore.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -29,7 +31,18 @@ public class ChatController {
 
     @Autowired
     private FriendRequestService friendRequestService;
-
+    @Autowired
+    private NotificationService notificationService;
+    @Autowired
+    private IUserRepository userRepository;
+    @ModelAttribute
+    public void addAttributes(Model model, Principal principal) {
+        if (principal != null) {
+            User currentUser = userRepository.findByUsername(principal.getName());
+            int unreadNotificationCount = notificationService.getUnreadNotifications(currentUser).size();
+            model.addAttribute("unreadNotificationCount", unreadNotificationCount);
+        }
+    }
     @GetMapping("/chat")
     public String getChatPage(Model model, Principal principal) {
         String username = principal.getName();
@@ -60,22 +73,8 @@ public class ChatController {
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public Message sendMessage(@Payload Message chatMessage) {
+        User sender = userService.findById(chatMessage.getSender().getId());
+        chatMessage.getSender().setName(sender.getName());  // Ensure the sender's name is set
         return messageService.save(chatMessage);
-    }
-
-    @MessageMapping("/chat.addUser")
-    @SendTo("/topic/public")
-    public Message addUser(@Payload Message chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        if (chatMessage == null || chatMessage.getSender() == null) {
-            System.err.println("Unable to add user: chatMessage or chatMessage.getSender() is null");
-            return null;
-        }
-        if (headerAccessor != null && headerAccessor.getSessionAttributes() != null) {
-            headerAccessor.getSessionAttributes().put("username", chatMessage.getSender().getUsername());
-        } else {
-            // Log the error or handle it appropriately
-            System.err.println("Unable to add user: headerAccessor or its session attributes are null");
-        }
-        return chatMessage;
     }
 }

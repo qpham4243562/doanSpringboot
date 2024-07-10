@@ -193,13 +193,13 @@ public class UserPostController {
         existingUserPost.setImages(imageList);
 
         userPostService.updateUserPost(existingUserPost);
-        return "redirect:/user-posts";
+        return "redirect:/profile";
     }
 
     @GetMapping("/{id}/delete")
     public String deleteUserPost(@PathVariable Long id) {
         userPostService.deleteUserPost(id);
-        return "redirect:/user-posts";
+        return "redirect:/profile";
     }
 
     @GetMapping("/images/{id}")

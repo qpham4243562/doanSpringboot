@@ -104,3 +104,24 @@
   box-shadow: 0 0 5px orange !important; /* Thêm hiệu ứng bóng màu cam */
 }
 
+.post-images img {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 10px;
+}
+.friends-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+.friends-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.friends-list img {
+    margin-right: 10px;
+    border-radius: 50%;
+}
+.friends-list form {
+    margin-left: auto;
+}
