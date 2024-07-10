@@ -66,7 +66,7 @@ public class NotificationService {
     public void createFriendRequestNotification(Friend friendRequest) {
         Notification notification = new Notification();
         notification.setUser(friendRequest.getFriend());
-        notification.setMessage(friendRequest.getUser().getUsername() + " sent you a friend request");
+        notification.setMessage(friendRequest.getUser().getName() + " sent you a friend request");
         notification.setType("FRIEND_REQUEST");
         notification.setRelatedUserId(friendRequest.getUser().getId());
         notification.setFriendRequestId(friendRequest.getId());

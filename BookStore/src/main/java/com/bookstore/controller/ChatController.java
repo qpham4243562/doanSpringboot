@@ -74,7 +74,7 @@ public class ChatController {
     @SendTo("/topic/public")
     public Message sendMessage(@Payload Message chatMessage) {
         User sender = userService.findById(chatMessage.getSender().getId());
-        chatMessage.getSender().setName(sender.getName());  // Ensure the sender's name is set
+        chatMessage.getSender().setName(sender.getName());
         return messageService.save(chatMessage);
     }
 }
