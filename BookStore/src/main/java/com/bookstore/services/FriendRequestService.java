@@ -69,9 +69,6 @@ public class FriendRequestService {
         friendRepository.save(friendRequest);
     }
 
-    public List<Friend> getPendingFriendRequests(User user) {
-        return friendRepository.findByFriendAndStatus(user, "PENDING");
-    }
 
     public Friend findById(Long id) {
         return friendRepository.findById(id).orElse(null);

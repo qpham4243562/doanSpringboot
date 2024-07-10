@@ -52,6 +52,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user.setEmail(email);
             user.setName(name);
             user.setUsername(username);
+            user.setEnabled(true);
             user.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
 
             user = userServices.saveNewGoogleUser(user);

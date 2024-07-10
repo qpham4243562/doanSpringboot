@@ -17,7 +17,6 @@ public class ProfileDTO {
         this.name = name;
     }
 
-    // Getter và Setter cho image
     public MultipartFile getImage() {
         return image;
     }
@@ -25,5 +24,5 @@ public class ProfileDTO {
     public void setImage(MultipartFile image) {
         this.image = image;
     }
-    // Các getter và setter
+
 }

@@ -11,6 +11,7 @@
 
     <!-- Use async for non-critical scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" async></script>
+    <script src="/js/custom_js.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js" async></script>
     <style>
 
@@ -88,6 +89,9 @@
                                 <img th:if="${user.image != null}"
                                      th:src="'data:image/jpeg;base64,' + ${user.getBase64Image()}"
                                      class="avatar-image" alt="Avatar"/>
+                                <img th:if="${user.image == null}"
+                                     src="/image/defaultAvatar.jpg"
+                                     class="avatar-image" alt="Avatar"/>
                                 <span class="user-name" th:text="${user.name}"></span>
                             </a>
                         </div>
@@ -108,6 +112,10 @@
                             <a th:href="@{/profile(userId=${userPost.user.id})}">
                                 <img th:if="${userPost.user.image != null}"
                                      th:src="'data:image/jpeg;base64,' + ${userPost.user.getBase64Image()}"
+                                     class="rounded-circle mr-2"
+                                     width="50" height="50"/>
+                                <img th:if="${userPost.user.image == null}"
+                                     src="/image/defaultAvatar.jpg"
                                      class="rounded-circle mr-2"
                                      width="50" height="50"/>
                             </a>
