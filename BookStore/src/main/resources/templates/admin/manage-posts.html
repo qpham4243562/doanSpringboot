@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Posts</title>
+    <!-- Bootstrap CSS -->
+    <th:block th:replace="~{layoutAdmin :: link-css}"></th:block>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <!-- Bootstrap Icons CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/custom_js.js"></script>
+
+</head>
+
+<body>
+<th:block th:replace="~{layoutAdmin :: body}"></th:block>
+<main>
+    <div class="container mt-4">
+        <div class="text-center">
+        <h1 class="mb-4">Quản lí bài đăng</h1>
+        </div>
+        <!-- Search bar (optional) -->
+        <form action="/admin/posts" method="GET" class="form-inline mb-4">
+            <input type="text" class="form-control mr-sm-2" th:name="search" placeholder="Search posts by content...">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <!-- Posts list -->
+        <div class="card">
+            <div class="card-body">
+                <table class="table" id="postsTable">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Content</th>
+                        <th>Class</th>
+                        <th>Subject</th>
+                        <th>Images</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Loop through posts -->
+                    <tr th:each="post : ${posts}" th:id="'post-' + ${post.id}">
+                        <td th:text="${post.id}"></td>
+                        <td th:text="${post.content}"></td>
+                        <td th:text="${post.classEntity.name}"></td>
+                        <td th:text="${post.subjectEntity.name}"></td>
+                        <td>
+                            <div class="post-images">
+                                <img th:each="image : ${post.images}" th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" class="img-thumbnail" style="max-width: 300px; max-height: 300px; display: none;" />
+                                <img th:src="'data:' + ${post.images[0].type} + ';base64,' + ${@base64EncoderUtil.encodeToString(post.images[0].data)}" class="img-thumbnail current-image" style="max-width: 300px; max-height: 300px;" />
+                                <button class="btn btn-secondary btn-sm prev-image">Previous</button>
+                                <button class="btn btn-secondary btn-sm next-image">Next</button>
+                            </div>
+                        </td>
+                        <td th:text="${#dates.format(post.createdAt, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                        <td>
+                            <button class="btn btn-danger btn-sm delete-post" th:data-post-id="${post.id}">Delete Post</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"
+        integrity="sha384-zh2sJN00a7R2sNvKv8tv9b1j5gn6H8+xB0/X5ldZzynlPm0+3fsV5ksdB+ciAIz+"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+pbzgWTUHqcjzIuvcAEL4JOEt2k1zeveXEC"
+        crossorigin="anonymous"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const postsTable = document.getElementById('postsTable');
+        postsTable.addEventListener('click', function(event) {
+            const target = event.target;
+            if (target.classList.contains('next-image') || target.classList.contains('prev-image')) {
+                const postImagesDiv = target.closest('.post-images');
+                const images = postImagesDiv.querySelectorAll('img.img-thumbnail');
+                let currentImage = postImagesDiv.querySelector('img.current-image');
+                let currentIndex = Array.from(images).indexOf(currentImage);
+
+                if (target.classList.contains('next-image')) {
+                    currentIndex = (currentIndex + 1) % images.length;
+                } else if (target.classList.contains('prev-image')) {
+                    currentIndex = (currentIndex - 1 + images.length) % images.length;
+                }
+
+                currentImage.classList.remove('current-image');
+                currentImage.style.display = 'none';
+                images[currentIndex].classList.add('current-image');
+                images[currentIndex].style.display = 'block';
+            }
+        });
+    });
+</script>
+
+</body>
+
+</html>

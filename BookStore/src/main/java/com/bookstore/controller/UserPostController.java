@@ -68,6 +68,7 @@ public class UserPostController {
                                   @RequestParam(value = "selectedSubject", required = false) Long selectedSubjectId,
                                   Model model,
                                   Principal principal) {
+        // Lấy danh sách các bài viết dựa vào các tham số lọc
         List<User_Post> userPosts;
         if (selectedClassId != null && selectedSubjectId != null) {
             userPosts = userPostService.getUserPostsByClassAndSubject(selectedClassId, selectedSubjectId);
@@ -79,32 +80,40 @@ public class UserPostController {
             userPosts = userPostService.getAllApprovedUserPosts();
         }
 
+        // Lọc ra những bài viết đã được phê duyệt
         userPosts = userPosts.stream().filter(User_Post::isApproved).collect(Collectors.toList());
 
+        // Cập nhật số lượng comment cho từng bài viết
         for (User_Post userPost : userPosts) {
             userPost.setCommentCount(commentService.countCommentsByUserPostId(userPost.getId()));
         }
 
+        // Sắp xếp các bài viết theo thời gian tạo mới nhất
         userPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
 
-        // Lấy thông tin người dùng hiện tại
-        User currentUser = userService.findByUsername(principal.getName());
+        // Lấy thông tin người dùng hiện tại nếu có và kiểm tra null
+        User currentUser = null;
+        if (principal != null) {
+            currentUser = userService.findByUsername(principal.getName());
+            if (currentUser != null) {
+                // Lấy danh sách các bài viết đã follow của người dùng hiện tại
+                List<User_Post> followedPosts = currentUser.getFollowedPosts();
+                model.addAttribute("followedPosts", followedPosts);
+            }
+        }
 
-        // Lấy danh sách các bài viết đã follow
-        List<User_Post> followedPosts = currentUser.getFollowedPosts();
-
+        // Thêm các attribute vào model
         model.addAttribute("userPosts", userPosts);
         model.addAttribute("classEntities", classService.getAllClasses());
         model.addAttribute("subjectEntities", subjectService.getAllSubjects());
         model.addAttribute("selectedClassId", selectedClassId);
         model.addAttribute("selectedSubjectId", selectedSubjectId);
-        model.addAttribute("followedPosts", followedPosts);
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("user_Post", new User_Post());
 
-
         return "user-post/list";
     }
+
 
     @PostMapping("/new")
     public ResponseEntity<Map<String, Object>> createUserPost(
@@ -149,24 +158,6 @@ public class UserPostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("status", "success", "message", "Bài đăng đã được tạo thành công!"));
     }
 
-    private void prepareModelForListView(Model model, Principal principal) {
-        model.addAttribute("classEntities", classService.getAllClasses());
-        model.addAttribute("subjectEntities", subjectService.getAllSubjects());
-        User currentUser = userService.findByUsername(principal.getName());
-        model.addAttribute("currentUser", currentUser);
-        List<User_Post> userPosts = userPostService.getAllApprovedUserPosts();
-        userPosts = userPosts.stream().filter(User_Post::isApproved).collect(Collectors.toList());
-
-        for (User_Post userPost : userPosts) {
-            userPost.setCommentCount(commentService.countCommentsByUserPostId(userPost.getId()));
-        }
-
-        userPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
-
-        model.addAttribute("userPosts", userPosts);
-        model.addAttribute("selectedClassId", null);
-        model.addAttribute("selectedSubjectId", null);
-    }
 
 
 

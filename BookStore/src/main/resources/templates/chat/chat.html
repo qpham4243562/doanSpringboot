@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Chat</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <h2>Friends</h2>
+      <ul class="list-group">
+        <li th:each="friend : ${friends}" class="list-group-item">
+          <img th:if="${friend.friend.image != null}"
+               th:src="'data:image/jpeg;base64,' + ${friend.friend.getBase64Image()}"
+               class="avatar-image img-thumbnail" alt="Avatar" width="50" height="50"/>
+          <span th:text="${friend.friend.name}" th:data-id="${friend.friend.id}" class="friend-name"></span>
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-8">
+      <div id="chat-content">
+        <!-- Chat content will be loaded here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  $(document).ready(function() {
+    var stompClient = null;
+
+    $(".friend-name").on("click", function() {
+      var friendId = $(this).data("id");
+      $.ajax({
+        url: "/chat/" + friendId,
+        success: function(response) {
+          $("#chat-content").html(response);
+          $("#recipientId").val(friendId);  // Set the recipient ID dynamically
+          if (stompClient !== null) {
+            stompClient.disconnect();
+          }
+          connect();  // Connect to WebSocket for the new chat
+        }
+      });
+    });
+
+    function connect() {
+      var socket = new SockJS('/ws');
+      stompClient = Stomp.over(socket);
+      stompClient.connect({}, onConnected, onError);
+    }
+
+    function onConnected() {
+      stompClient.subscribe('/topic/public', onMessageReceived);
+    }
+
+    function onError(error) {
+      console.log('Could not connect to WebSocket server. Please refresh this page to try again!');
+    }
+
+    function sendMessage(event) {
+      event.preventDefault();
+      var messageContent = $("#message").val().trim();
+      var recipientId = $("#recipientId").val();
+      if (messageContent && stompClient && stompClient.connected) {
+        var chatMessage = {
+          sender: {id: [[${currentUser.id}]], username: [[${currentUser.username}]]},
+          recipient: {id: recipientId},
+          content: messageContent,
+          type: 'CHAT'
+        };
+        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+        $("#message").val('');
+      } else {
+        console.log('WebSocket is not connected.');
+      }
+    }
+
+    function onMessageReceived(payload) {
+      var message = JSON.parse(payload.body);
+      var messageElement = '<div><strong>' + message.sender.username + '</strong>: ' + message.content + '</div>';
+      $("#chat-messages").append(messageElement);
+      $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
+    }
+
+    $(document).on("submit", "#chat-form", sendMessage);
+  });
+</script>
+</body>
+</html>

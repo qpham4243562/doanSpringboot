@@ -7,12 +7,14 @@ import com.bookstore.repository.CommentRepository;
 import com.bookstore.repository.IRoleRepository;
 import com.bookstore.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -28,11 +30,15 @@ public class UserServices {
     @Autowired
     private JavaMailSender mailSender;
     @Autowired
+    @Lazy
     private PasswordEncoder passwordEncoder;
     @Autowired
     private CommentRepository commentRepository;
     public void save(User user) {
         boolean isNewUser = user.getId() == null;
+        if (isNewUser) {
+            user.setEnabled(true); // Default to enabled for new users
+        }
         userRepository.save(user);
 
         if (isNewUser) {
@@ -44,6 +50,7 @@ public class UserServices {
             }
         }
     }
+
 
     @Transactional
     public boolean processForgotPassword(String email) {
@@ -122,6 +129,56 @@ public class UserServices {
     public User findById(Long userId) {
         return userRepository.findById(userId).orElse(null);
     }
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Transactional
+    public User saveNewGoogleUser(User user) {
+        user.setRoles(List.of(roleRepository.findByName("USER")));
+        return userRepository.save(user);
+    }
+    @Transactional
+    public void disableUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setEnabled(false);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void enableUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
 
 
+
+    public List<User> getActiveUsers() {
+        return userRepository.findByEnabledTrue();
+    }
+
+    @Transactional
+    public void updateUser(User updatedUser) {
+        User existingUser = userRepository.findById(updatedUser.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setName(updatedUser.getName());
+
+        userRepository.save(existingUser);
+    }
+    public List<User> searchUsersByEmail(String email) {
+        return userRepository.findUsersByEmailContaining(email);
+    }
+    @Transactional
+    public void updateUserEmail(Long userId, String newEmail) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setEmail(newEmail);
+        userRepository.save(user);
+    }
 }
