@@ -29,9 +29,28 @@
             background-size: cover;
             background-position: center;
         }
+
+        .content-preview {
+            display: inline;
+        }
+
+        .content-full {
+            display: none
+
+        }
+
+        .show-more, .show-less {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/custom_js.js"></script>
+    <!-- Lightbox CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+    <!-- Lightbox JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
 </head>
 <!-- Include header from layout -->
 <th:block th:replace="~{layoutAdmin :: body}"></th:block>
@@ -57,19 +76,28 @@
                                 <tbody>
                                 <tr th:each="post : ${unapprovedPosts}">
                                     <td th:text="${post.id}"></td>
-                                    <td th:text="${post.content}"></td>
+                                    <td>
+                                        <span th:if="${#strings.length(post.content) > 30}">
+                                            <span class="content-preview" th:text="${post.content.substring(0, 30)} + '...'"></span>
+                                            <span class="content-full" th:text="${post.content}"></span>
+                                            <span class="show-more">show more</span>
+                                            <span class="show-less" style="display: none;">show less</span>
+                                        </span>
+                                        <span th:if="${#strings.length(post.content) <= 30}" th:text="${post.content}"></span>
+                                    </td>
                                     <td class="post-images">
-                                        <div th:each="image : ${post.images}">
-                                            <img th:src="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}"/>
+                                        <a th:href="'data:' + ${post.images[0].type} + ';base64,' + ${@base64EncoderUtil.encodeToString(post.images[0].data)}" data-lightbox="post-gallery-[[${post.id}]]" data-title="Post ID [[${post.id}]]">
+                                            <img th:src="'data:' + ${post.images[0].type} + ';base64,' + ${@base64EncoderUtil.encodeToString(post.images[0].data)}" />
+                                        </a>
+                                        <div th:each="image, iterStat : ${post.images}" th:if="${iterStat.index > 0}">
+                                            <a th:href="'data:' + ${image.type} + ';base64,' + ${@base64EncoderUtil.encodeToString(image.data)}" data-lightbox="post-gallery-[[${post.id}]]" data-title="Image [[${iterStat.index + 1}]]"></a>
                                         </div>
                                     </td>
                                     <td>
                                         <form th:action="@{/admin/{id}/approve(id=${post.id})}" method="post" class="d-inline">
                                             <button type="submit" class="btn btn-success btn-sm">Approve</button>
                                         </form>
-                                    <td>
                                         <button class="btn btn-danger btn-sm delete-post" th:data-post-id="${post.id}">Delete Post</button>
-                                    </td>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -83,5 +111,31 @@
 </main>
 <!-- Include footer from layout -->
 <th:block th:replace="~{layoutAdmin :: footer}"></th:block>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Lightbox setup
+        lightbox.option({
+            albumLabel: "Image %1 of %2",
+            fadeDuration: 600,
+            resizeDuration: 500,
+            wrapAround: true
+        });
+
+        // Show more/less functionality
+        $('.show-more').on('click', function() {
+            $(this).siblings('.content-preview').hide();
+            $(this).siblings('.content-full').show();
+            $(this).hide();
+            $(this).siblings('.show-less').show();
+        });
+
+        $('.show-less').on('click', function() {
+            $(this).siblings('.content-preview').show();
+            $(this).siblings('.content-full').hide();
+            $(this).hide();
+            $(this).siblings('.show-more').show();
+        });
+    });
+</script>
 </body>
 </html>
