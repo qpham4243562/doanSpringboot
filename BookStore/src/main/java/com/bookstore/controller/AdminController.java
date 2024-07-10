@@ -5,6 +5,8 @@ import com.bookstore.entity.User;
 import com.bookstore.entity.User_Post;
 import com.bookstore.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,11 +69,16 @@ public class AdminController {
     }
 
     @PostMapping("/{id}/delete")
-    public String deletePost(@PathVariable Long id) {
-        User_Post post = userPostService.getUserPostById(id);
-        userPostService.deleteUserPost(id);
-        notificationService.createDeletedNotification(post);
-        return "redirect:/admin/unapproved";
+    @ResponseBody
+    public ResponseEntity<String> deletePost(@PathVariable Long id) {
+        try {
+            User_Post post = userPostService.getUserPostById(id);
+            userPostService.deleteUserPost(id);
+            notificationService.createDeletedNotification(post);
+            return ResponseEntity.ok("Post deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting post");
+        }
     }
 
 
@@ -153,12 +160,5 @@ public class AdminController {
         model.addAttribute("subjectEntities", subjectService.getAllSubjects());
         return "admin/manage-posts";
     }
-
-    @PostMapping("/{id}/delete1")
-    public String delete1Post(@PathVariable Long id) {
-        User_Post post = userPostService.getUserPostById(id);
-        userPostService.deleteUserPost(id);
-        notificationService.createDeletedNotification(post);
-        return "redirect:/admin/posts";
-    }
+    
 }

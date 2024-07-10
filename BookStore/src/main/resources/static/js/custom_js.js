@@ -203,4 +203,22 @@ $(document).ready(function() {
         });
     });
 });
-
+/* xóa bài viết trong form admin */
+$(document).ready(function() {
+    $('.delete-post').on('click', function() {
+        const postId = $(this).data('post-id');
+        if (confirm('Are you sure you want to delete this post?')) {
+            $.ajax({
+                url: `/admin/${postId}/delete`,
+                type: 'POST',
+                success: function(response) {
+                    alert('Post deleted successfully');
+                    $(`#post-${postId}`).remove();
+                },
+                error: function(xhr, status, error) {
+                    alert('Error deleting post: ' + xhr.responseText);
+                }
+            });
+        }
+    });
+});

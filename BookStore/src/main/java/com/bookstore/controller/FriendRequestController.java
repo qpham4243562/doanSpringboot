@@ -41,9 +41,13 @@ public class FriendRequestController {
             return ResponseEntity.badRequest().body(Map.of("error", "You cannot send a friend request to yourself"));
         }
 
-        Friend friendRequest = friendRequestService.sendFriendRequest(fromUser, toUser);
-        notificationService.createFriendRequestNotification(friendRequest);
-        return ResponseEntity.ok(Map.of("message", "Friend request sent successfully"));
+        try {
+            Friend friendRequest = friendRequestService.sendFriendRequest(fromUser, toUser);
+            notificationService.createFriendRequestNotification(friendRequest);
+            return ResponseEntity.ok(Map.of("message", "Friend request sent successfully"));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/accept")

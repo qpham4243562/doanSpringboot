@@ -17,6 +17,17 @@ public class FriendRequestService {
     private FriendRepository friendRepository;
 
     public Friend sendFriendRequest(User fromUser, User toUser) {
+        Friend existingRequest = friendRepository.findByUserAndFriendAndStatus(fromUser, toUser, "PENDING");
+        if (existingRequest != null) {
+            throw new IllegalStateException("A friend request has already been sent.");
+        }
+
+        // Check if they are already friends
+        Friend existingFriendship = friendRepository.findByUserAndFriendAndStatus(fromUser, toUser, "ACCEPTED");
+        if (existingFriendship != null) {
+            throw new IllegalStateException("You are already friends with this user.");
+        }
+
         Friend friendRequest = new Friend();
         friendRequest.setUser(fromUser);
         friendRequest.setFriend(toUser);
